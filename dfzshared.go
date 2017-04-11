@@ -170,9 +170,9 @@ func GetHttpResponse(agbcode string) (CareGiver, error) {
 	return record, nil
 }
 
-// Check BSN ...
+// GetPerson ...
 //========================================================================================================================
-func GetPatient(stub shim.ChaincodeStubInterface, bsncode string) (Person, error) {
+func GetPerson(stub shim.ChaincodeStubInterface, bsncode string) (Person, error) {
 	var patient Person
 	personRepo, err := GetDeployedChaincode(stub, "person")
 	if err != nil {
