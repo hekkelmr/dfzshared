@@ -136,7 +136,7 @@ func GetDeployedChaincode(stub shim.ChaincodeStubInterface, name string) (string
 //========================================================================================================================
 func GetCaregiver(stub shim.ChaincodeStubInterface, agbcode string) (CareGiver, error) {
 	var caregiver CareGiver
-	caregiver, err := GetHttpResponse(agbcode)
+	caregiver, err := GetHTTPResponse(agbcode)
 	if err != nil {
 		err = errors.New("Zorgverlener niet gevonden")
 		return caregiver, err
@@ -145,7 +145,8 @@ func GetCaregiver(stub shim.ChaincodeStubInterface, agbcode string) (CareGiver, 
 	return caregiver, nil
 }
 
-func GetHttpResponse(agbcode string) (CareGiver, error) {
+// GetHTTPResponse ... Execute a HTTP caregiver request and return CareGiver struct
+func GetHTTPResponse(agbcode string) (CareGiver, error) {
 	var record CareGiver
 
 	url := fmt.Sprintf("http://10.1.66.11:8081/agb/%s", agbcode)
