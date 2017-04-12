@@ -96,7 +96,7 @@ type Declaratie struct {
 
 // Retourbericht ... The outcome message for a declaration
 type Retourbericht struct {
-	Antwoord    string `json:"antwoord"`
+	Retourcode  string `json:"retourcode"`
 	Toelichting string `json:"toelichting"`
 }
 
