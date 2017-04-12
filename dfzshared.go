@@ -16,21 +16,35 @@ import (
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
 
+// ContractStatus ...
+// The status of a policycontract
+type ContractStatus struct {
+	Remaining string `json:"remaining"`
+	Unity     string `json:"unity"`
+}
+
+// PolicyYear ...
+// The name of the policycontrcat per year
 type PolicyYear struct {
-	Year           string `json:"year"`
-	PolicyContract string `json:"policycontract"`
+	Year               string `json:"year"`
+	PolicyContractName string `json:"policycontractname"`
 }
 
+// PatientPolicyStatus ...
+// The status of a PatientPolicy combined wit the ContractStatus
 type PatientPolicyStatus struct {
-	PatientPolicy PatientPolicy `json:"patientpolicy"`
-	CurrentStatus CurrentStatus `json:"currentstatus"`
+	PatientPolicy  PatientPolicy  `json:"patientpolicy"`
+	ContractStatus ContractStatus `json:"contractstatus"`
 }
 
+// PatientPolicy ...
+// The policy a patient has in a given year
 type PatientPolicy struct {
 	Bsncode    string     `json:"bsncode"`
 	PolicyYear PolicyYear `json:"policyyear"`
 }
 
+// Person ...
 type Person struct {
 	Bsncode string    `json:"bsncode"`
 	Name    string    `json:"name"`
@@ -38,6 +52,8 @@ type Person struct {
 	Dod     time.Time `json:"dod"`
 }
 
+// Chain ...
+// Technical contract to resolve the logical chain name to the phsyical one
 type Chain struct {
 	Name        string `json:"name"`
 	ChaincodeID string `json:"chaincodeid"`
@@ -45,11 +61,6 @@ type Chain struct {
 
 type AssignedPolicies struct {
 	years []PolicyYear `json:"years"`
-}
-
-type CurrentStatus struct {
-	Remaining string `json:"remaining"`
-	Unity     string `json:"unity"`
 }
 
 type EIVoorloopRecord struct {
@@ -95,7 +106,7 @@ type InsuranceCompany struct {
 	Prefix    string `json:"prefix"`
 }
 
-// Get a deployed chain
+// GetDeployedChaincode ... Get a deployed chain
 //========================================================================================================
 func GetDeployedChaincode(stub shim.ChaincodeStubInterface, name string) (string, error) {
 	var chain Chain
@@ -116,7 +127,7 @@ func GetDeployedChaincode(stub shim.ChaincodeStubInterface, name string) (string
 	return chain.ChaincodeID, nil
 }
 
-// Check Caregiver ...
+// GetCaregiver ... Check Caregiver ...
 //========================================================================================================================
 func GetCaregiver(stub shim.ChaincodeStubInterface, agbcode string) (CareGiver, error) {
 	var caregiver CareGiver
@@ -170,9 +181,9 @@ func GetHttpResponse(agbcode string) (CareGiver, error) {
 	return record, nil
 }
 
-// Check BSN ...
+// GetPerson ...
 //========================================================================================================================
-func GetPatient(stub shim.ChaincodeStubInterface, bsncode string) (Person, error) {
+func GetPerson(stub shim.ChaincodeStubInterface, bsncode string) (Person, error) {
 	var patient Person
 	personRepo, err := GetDeployedChaincode(stub, "person")
 	if err != nil {
