@@ -63,6 +63,7 @@ type AssignedPolicies struct {
 	years []PolicyYear `json:"years"`
 }
 
+// EIVoorloopRecord ... The header record of a declaration
 type EIVoorloopRecord struct {
 	AGBServicebureau         string `json:"agbservicebureau"`
 	AGBZorgverlener          string `json:"agbzorgverlener"`
@@ -71,11 +72,13 @@ type EIVoorloopRecord struct {
 	IndentificatieBetalenAan string `json:"indetificatiebetalenaan"`
 }
 
+// EIVerzekerdeRecord ... The subject of a declaration
 type EIVerzekerdeRecord struct {
 	Bsncode string `json:"bsncode"`
 	Naam    string `json:"naam"`
 }
 
+// EIPrestatieRecord ... The details of a declaration
 type EIPrestatieRecord struct {
 	Prestatiecodelijst string    `json:"prestatiecodelijst"`
 	Prestatiecode      string    `json:"prestatiecode"`
@@ -84,13 +87,15 @@ type EIPrestatieRecord struct {
 	DatumPrestatie     time.Time `json:"datumprestatie"`
 }
 
-type PM304Declaratie struct {
+// Declaratie ... Combined declaration structure
+type Declaratie struct {
 	Voorlooprecord   EIVoorloopRecord   `json:"voorlooprecord"`
 	VerzekerdeRecord EIVerzekerdeRecord `json:"verzekerderecord"`
 	PrestatieRecord  EIPrestatieRecord  `json:"prestatierecord"`
 }
 
-type PM305Retour struct {
+// Retourbericht ... The outcome message for a declaration
+type Retourbericht struct {
 	Antwoord    string `json:"antwoord"`
 	Toelichting string `json:"toelichting"`
 }
