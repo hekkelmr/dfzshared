@@ -134,8 +134,9 @@ func GetDeployedChaincode(stub shim.ChaincodeStubInterface, name string) (string
 
 // GetCaregiver ... Check Caregiver ...
 //========================================================================================================================
-func GetCaregiver(stub shim.ChaincodeStubInterface, agbcode string) (CareGiver, error) {
+func GetCaregiver(agbcode string) (CareGiver, error) {
 	var caregiver CareGiver
+	fmt.Printf("Searching %s\n", agbcode)
 	caregiver, err := GetHTTPResponse(agbcode)
 	if err != nil {
 		err = errors.New("Zorgverlener niet gevonden")
