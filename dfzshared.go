@@ -116,6 +116,7 @@ type ContractedTreatment struct {
 	Prestatiecodelijst string `json:"prestatiecodelijst"`
 	Prestatiecode      string `json:"prestatiecode"`
 	TariefPrestatie    string `json:"tariefprestatie"`
+	Omschrijving       string `json:"omschrijving"`
 }
 
 type HealthCareContract struct {
