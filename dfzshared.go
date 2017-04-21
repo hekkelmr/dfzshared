@@ -8,8 +8,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
-	"net/http"
 	"strconv"
 	"time"
 
@@ -149,58 +147,41 @@ func GetDeployedChaincode(stub shim.ChaincodeStubInterface, name string) (string
 
 // GetCaregiver ... Check Caregiver ...
 //========================================================================================================================
-func GetCaregiver(agbcode string) (CareGiver, error) {
+func GetCaregiver(stub shim.ChaincodeStubInterface, agbcode string) (CareGiver, error) {
 	var caregiver CareGiver
 	fmt.Printf("Searching %s\n", agbcode)
-	caregiver, err := GetHTTPResponse(agbcode)
+
+	caregiverRepo, err := GetDeployedChaincode(stub, "caregiver")
 	if err != nil {
-		err = errors.New("Zorgverlener niet gevonden")
+		return caregiver, err
+	}
+
+	function := "query"
+	invokeArgs := util.ToChaincodeArgs(function, agbcode)
+	response := stub.InvokeChaincode(caregiverRepo, invokeArgs, "")
+
+	if response.Status != shim.OK {
+		msg := "Failed to get state for caregiver chain"
+		fmt.Println(msg)
+		return caregiver, errors.New(msg)
+	}
+
+	jsonString := string(response.Payload)
+	fmt.Println("Result:")
+	fmt.Println(jsonString)
+
+	if jsonString == "null" {
+		msg := "Caregiver does not exist"
+		fmt.Println(msg)
+		return caregiver, errors.New(msg)
+	}
+
+	err = json.Unmarshal(response.Payload, &caregiver)
+	if err != nil {
 		return caregiver, err
 	}
 
 	return caregiver, nil
-}
-
-// GetHTTPResponse ... Execute a HTTP caregiver request and return CareGiver struct
-func GetHTTPResponse(agbcode string) (CareGiver, error) {
-	var record CareGiver
-
-	url := fmt.Sprintf("http://10.1.66.11:8081/agb/%s", agbcode)
-
-	// Build the request
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		fmt.Printf("NewRequest: %s\n", err.Error())
-		return record, err
-	}
-
-	// For control over HTTP client headers,
-	// redirect policy, and other settings,
-	// create a Client
-	// A Client is an HTTP client
-	client := &http.Client{}
-
-	// Send the request via a client
-	// Do sends an HTTP request and
-	// returns an HTTP response
-	resp, err := client.Do(req)
-	if err != nil {
-		fmt.Printf("Do: %s\n", err.Error())
-		return record, err
-	}
-
-	// Callers should close resp.Body
-	// when done reading from it
-	// Defer the closing of the body
-	defer resp.Body.Close()
-
-	// Use json.Decode for reading streams of JSON data
-	if err := json.NewDecoder(resp.Body).Decode(&record); err != nil {
-		log.Println(err)
-		return record, err
-	}
-
-	return record, nil
 }
 
 // GetPerson ...
