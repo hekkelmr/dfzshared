@@ -98,7 +98,7 @@ type Retourbericht struct {
 	Retourcode     string `json:"retourcode"`
 	Restant        string `json:"restant"`
 	RestantEenheid string `json:"restanteenheid"`
-	bijbetalen     string `json:"bijbetalen"`
+	Bijbetalen     string `json:"bijbetalen"`
 }
 
 type CareGiver struct {
