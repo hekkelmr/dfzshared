@@ -236,3 +236,39 @@ func GetPerson(stub shim.ChaincodeStubInterface, bsncode string) (Person, error)
 
 	return patient, nil
 }
+
+// GetInsuranceCompany ...
+//========================================================================================================================
+func GetInsuranceCompany(stub shim.ChaincodeStubInterface, uzovicode string) (InsuranceCompany, error) {
+	var company InsuranceCompany
+	companyRepo, err := GetDeployedChaincode(stub, "insurancecompany")
+	if err != nil {
+		return company, err
+	}
+
+	function := "query"
+	invokeArgs := util.ToChaincodeArgs(function, uzovicode)
+	response := stub.InvokeChaincode(companyRepo, invokeArgs, "")
+	if response.Status != shim.OK {
+		msg := "Failed to get state for insurancecompany chain"
+		fmt.Println(msg)
+		return company, errors.New(msg)
+	}
+
+	jsonString := string(response.Payload)
+	fmt.Println("Result:")
+	fmt.Println(jsonString)
+
+	if jsonString == "null" {
+		msg := "Insurance company does not exist"
+		fmt.Println(msg)
+		return company, errors.New(msg)
+	}
+
+	err = json.Unmarshal(response.Payload, &company)
+	if err != nil {
+		return company, err
+	}
+
+	return company, nil
+}
