@@ -95,8 +95,10 @@ type Declaratie struct {
 
 // Retourbericht ... The outcome message for a healthclaim
 type Retourbericht struct {
-	Retourcode  string `json:"retourcode"`
-	Toelichting string `json:"toelichting"`
+	Retourcode     string `json:"retourcode"`
+	Restant        string `json:"restant"`
+	RestantEenheid string `json:"restanteenheid"`
+	bijbetalen     string `json:"bijbetalen"`
 }
 
 type CareGiver struct {
