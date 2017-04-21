@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/hyperledger/fabric/common/util"
@@ -271,4 +272,16 @@ func GetInsuranceCompany(stub shim.ChaincodeStubInterface, uzovicode string) (In
 	}
 
 	return company, nil
+}
+
+// CheckYear ...
+func CheckYear(year string) (uint64, error) {
+	intYear, err := strconv.ParseUint(year, 10, 32)
+	if err != nil {
+		return 0, err
+	}
+	if intYear < 2016 || intYear > 2099 {
+		return 0, errors.New("Invalid year")
+	}
+	return intYear, nil
 }
