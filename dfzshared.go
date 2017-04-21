@@ -111,6 +111,19 @@ type InsuranceCompany struct {
 	Prefix    string `json:"prefix"`
 }
 
+type ContractedTreatment struct {
+	Prestatiecodelijst string `json:"prestatiecodelijst"`
+	Prestatiecode      string `json:"prestatiecode"`
+	TariefPrestatie    string `json:"tariefprestatie"`
+}
+
+type HealthCareContract struct {
+	UzoviCode            string                `json:"uzovicode"`
+	AgbCode              string                `json:"agbcode"`
+	Year                 string                `json:"year"`
+	ContractedTreatments []ContractedTreatment `json:"contractedtreatments"`
+}
+
 // GetDeployedChaincode ... Get a deployed chain
 //========================================================================================================
 func GetDeployedChaincode(stub shim.ChaincodeStubInterface, name string) (string, error) {
