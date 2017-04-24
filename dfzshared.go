@@ -18,8 +18,9 @@ import (
 // ContractStatus ...
 // The status of a policycontract
 type ContractStatus struct {
-	Remaining int64  `json:"remaining"`
-	Unity     string `json:"unity"`
+	Remaining  int64      `json:"remaining"`
+	Unity      string     `json:"unity"`
+	Declaratie Declaratie `json:"declaratie"`
 }
 
 // PolicyYear ...
@@ -99,6 +100,7 @@ type Retourbericht struct {
 	Restant        int64  `json:"restant"`
 	RestantEenheid string `json:"restanteenheid"`
 	Bijbetalen     int64  `json:"bijbetalen"`
+	Bericht        string `json:"bericht"`
 }
 
 type CareGiver struct {
