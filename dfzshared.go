@@ -132,10 +132,9 @@ type HealthCareContract struct {
 }
 
 type WalletTransaction struct {
-	From    string    `json:"from"`
-	Ammount int64     `json:"amount"`
-	Date    time.Time `json:"date"`
-	Data    string    `json:"data"`
+	From    string `json:"from"`
+	Ammount int64  `json:"amount"`
+	Data    string `json:"data"`
 }
 
 type CurecoinWallet struct {
