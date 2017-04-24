@@ -18,7 +18,7 @@ import (
 // ContractStatus ...
 // The status of a policycontract
 type ContractStatus struct {
-	Remaining string `json:"remaining"`
+	Remaining int64  `json:"remaining"`
 	Unity     string `json:"unity"`
 }
 
