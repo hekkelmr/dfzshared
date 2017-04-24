@@ -81,8 +81,8 @@ type EIVerzekerdeRecord struct {
 type EIPrestatieRecord struct {
 	Prestatiecodelijst string    `json:"prestatiecodelijst"`
 	Prestatiecode      string    `json:"prestatiecode"`
-	TariefPrestatie    string    `json:"tariefprestatie"`
-	BerekendBedrag     string    `json:"berekendbedrag"`
+	TariefPrestatie    int64     `json:"tariefprestatie"`
+	BerekendBedrag     int64     `json:"berekendbedrag"`
 	DatumPrestatie     time.Time `json:"datumprestatie"`
 }
 
@@ -96,9 +96,9 @@ type Declaratie struct {
 // Retourbericht ... The outcome message for a healthclaim
 type Retourbericht struct {
 	Retourcode     string `json:"retourcode"`
-	Restant        string `json:"restant"`
+	Restant        int64  `json:"restant"`
 	RestantEenheid string `json:"restanteenheid"`
-	Bijbetalen     string `json:"bijbetalen"`
+	Bijbetalen     int64  `json:"bijbetalen"`
 }
 
 type CareGiver struct {
@@ -115,7 +115,7 @@ type InsuranceCompany struct {
 type ContractedTreatment struct {
 	Prestatiecodelijst string `json:"prestatiecodelijst"`
 	Prestatiecode      string `json:"prestatiecode"`
-	TariefPrestatie    string `json:"tariefprestatie"`
+	TariefPrestatie    int64  `json:"tariefprestatie"`
 	Omschrijving       string `json:"omschrijving"`
 }
 
