@@ -15,54 +15,6 @@ import (
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
 
-// ContractStatus ...
-// The status of a policycontract
-type ContractStatus struct {
-	Remaining  int64      `json:"remaining"`
-	Unity      string     `json:"unity"`
-	Declaratie Declaratie `json:"declaratie"`
-}
-
-// PolicyYear ...
-// The name of the policycontrcat per year
-type PolicyYear struct {
-	Year               string `json:"year"`
-	PolicyContractName string `json:"policycontractname"`
-}
-
-// PatientPolicyStatus ...
-// The status of a PatientPolicy combined wit the ContractStatus
-type PatientPolicyStatus struct {
-	PatientPolicy  PatientPolicy  `json:"patientpolicy"`
-	ContractStatus ContractStatus `json:"contractstatus"`
-}
-
-// PatientPolicy ...
-// The policy a patient has in a given year
-type PatientPolicy struct {
-	Bsncode    string     `json:"bsncode"`
-	PolicyYear PolicyYear `json:"policyyear"`
-}
-
-// Person ...
-type Person struct {
-	Bsncode string    `json:"bsncode"`
-	Name    string    `json:"name"`
-	Dob     time.Time `json:"dob"`
-	Dod     time.Time `json:"dod"`
-}
-
-// Chain ...
-// Technical contract to resolve the logical chain name to the phsyical one
-type Chain struct {
-	Name        string `json:"name"`
-	ChaincodeID string `json:"chaincodeid"`
-}
-
-type AssignedPolicies struct {
-	years []PolicyYear `json:"years"`
-}
-
 // EIVoorloopRecord ... The header record of a healthclaim
 type EIVoorloopRecord struct {
 	AGBServicebureau         string `json:"agbservicebureau"`
@@ -94,13 +46,48 @@ type Declaratie struct {
 	PrestatieRecord  EIPrestatieRecord  `json:"prestatierecord"`
 }
 
-// Retourbericht ... The outcome message for a healthclaim
-type Retourbericht struct {
-	Retourcode     string `json:"retourcode"`
-	Restant        int64  `json:"restant"`
-	RestantEenheid string `json:"restanteenheid"`
-	Bijbetalen     int64  `json:"bijbetalen"`
-	Bericht        string `json:"bericht"`
+// ContractStatus ...
+// The status of a policycontract
+type ContractStatus struct {
+	Remaining  int64      `json:"remaining"`
+	Unity      string     `json:"unity"`
+	Declaratie Declaratie `json:"declaratie"`
+}
+
+// PolicyYear ...
+// The name of the policycontrcat per year
+type PolicyYear struct {
+	Year               string `json:"year"`
+	PolicyContractName string `json:"policycontractname"`
+}
+
+// PatientPolicyStatus ...
+// The status of a PatientPolicy combined wit the ContractStatus
+type PatientPolicyStatus struct {
+	PatientPolicy  PatientPolicy  `json:"patientpolicy"`
+	ContractStatus ContractStatus `json:"contractstatus"`
+}
+
+// PatientPolicy ...
+// The policy a patient has in a given year
+type PatientPolicy struct {
+	Bsncode    string     `json:"bsncode"`
+	PolicyYear PolicyYear `json:"policyyear"`
+}
+
+// Chain ...
+// Technical contract to resolve the logical chain name to the phsyical one
+type Chain struct {
+	Name        string `json:"name"`
+	ChaincodeID string `json:"chaincodeid"`
+}
+
+// Person ...
+type Person struct {
+	Bsncode string    `json:"bsncode"`
+	Name    string    `json:"name"`
+	Dob     time.Time `json:"dob"`
+	Dod     time.Time `json:"dod"`
 }
 
 type CareGiver struct {
@@ -112,6 +99,19 @@ type InsuranceCompany struct {
 	UzoviCode string `json:"uzovicode"`
 	Name      string `json:"name"`
 	Prefix    string `json:"prefix"`
+}
+
+type AssignedPolicies struct {
+	years []PolicyYear `json:"years"`
+}
+
+// Retourbericht ... The outcome message for a healthclaim
+type Retourbericht struct {
+	Retourcode     string `json:"retourcode"`
+	Restant        int64  `json:"restant"`
+	RestantEenheid string `json:"restanteenheid"`
+	Bijbetalen     int64  `json:"bijbetalen"`
+	Bericht        string `json:"bericht"`
 }
 
 type ContractedTreatment struct {
