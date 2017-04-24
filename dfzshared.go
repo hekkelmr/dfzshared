@@ -84,21 +84,24 @@ type Chain struct {
 
 // Person ...
 type Person struct {
-	Bsncode string    `json:"bsncode"`
-	Name    string    `json:"name"`
-	Dob     time.Time `json:"dob"`
-	Dod     time.Time `json:"dod"`
+	Bsncode  string    `json:"bsncode"`
+	Name     string    `json:"name"`
+	Dob      time.Time `json:"dob"`
+	Dod      time.Time `json:"dod"`
+	WalletID string    `json:"walletid"`
 }
 
 type CareGiver struct {
-	AgbCode string `json:"agbcode"`
-	Name    string `json:"name"`
+	AgbCode  string `json:"agbcode"`
+	Name     string `json:"name"`
+	WalletID string `json:"walletid"`
 }
 
 type InsuranceCompany struct {
 	UzoviCode string `json:"uzovicode"`
 	Name      string `json:"name"`
 	Prefix    string `json:"prefix"`
+	WalletID  string `json:"walletid"`
 }
 
 type AssignedPolicies struct {
@@ -126,6 +129,19 @@ type HealthCareContract struct {
 	AgbCode              string                `json:"agbcode"`
 	Year                 string                `json:"year"`
 	ContractedTreatments []ContractedTreatment `json:"contractedtreatments"`
+}
+
+type WalletTransaction struct {
+	From    string    `json:"from"`
+	Ammount int64     `json:"amount"`
+	Date    time.Time `json:"date"`
+	Data    string    `json:"data"`
+}
+
+type CurecoinWallet struct {
+	ID                string            `json:"id"`
+	Balance           int64             `json:"balance"`
+	LatestTransaction WalletTransaction `json:"latesttransaction"`
 }
 
 // GetDeployedChaincode ... Get a deployed chain
