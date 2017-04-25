@@ -271,6 +271,32 @@ func GetWallet(stub shim.ChaincodeStubInterface, id string) (CurecoinWallet, err
 	return wallet, nil
 }
 
+// NewWallet ...
+//========================================================================================================================
+func NewWalletId(stub shim.ChaincodeStubInterface) (string, error) {
+	var wallet CurecoinWallet
+	repo, err := GetDeployedChaincode(stub, "curecoinwallet")
+	if err != nil {
+		return "", err
+	}
+
+	function := "create"
+	invokeArgs := util.ToChaincodeArgs(function, "")
+	response := stub.InvokeChaincode(repo, invokeArgs, "")
+	if response.Status != shim.OK {
+		msg := "Failed to get state for curecoinwallet chain"
+		fmt.Println(msg)
+		return "", errors.New(msg)
+	}
+
+	err = json.Unmarshal(response.Payload, &wallet)
+	if err != nil {
+		return "", err
+	}
+
+	return wallet.ID, nil
+}
+
 // CheckYear ...
 func CheckYear(year string) (uint64, error) {
 	intYear, err := strconv.ParseUint(year, 10, 32)
