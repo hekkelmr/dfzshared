@@ -273,7 +273,7 @@ func GetWallet(stub shim.ChaincodeStubInterface, id string) (CurecoinWallet, err
 
 // NewWallet ...
 //========================================================================================================================
-func NewWalletId(stub shim.ChaincodeStubInterface) (string, error) {
+func NewWalletID(stub shim.ChaincodeStubInterface) (string, error) {
 	var wallet CurecoinWallet
 	repo, err := GetDeployedChaincode(stub, "curecoinwallet")
 	if err != nil {
