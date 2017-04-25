@@ -185,16 +185,6 @@ func GetCaregiver(stub shim.ChaincodeStubInterface, agbcode string) (CareGiver, 
 		return caregiver, errors.New(msg)
 	}
 
-	jsonString := string(response.Payload)
-	fmt.Println("Result:")
-	fmt.Println(jsonString)
-
-	if jsonString == "null" {
-		msg := "Caregiver does not exist"
-		fmt.Println(msg)
-		return caregiver, errors.New(msg)
-	}
-
 	err = json.Unmarshal(response.Payload, &caregiver)
 	if err != nil {
 		return caregiver, err
@@ -217,16 +207,6 @@ func GetPerson(stub shim.ChaincodeStubInterface, bsncode string) (Person, error)
 	response := stub.InvokeChaincode(personRepo, invokeArgs, "")
 	if response.Status != shim.OK {
 		msg := "Failed to get state for patient chain"
-		fmt.Println(msg)
-		return patient, errors.New(msg)
-	}
-
-	jsonString := string(response.Payload)
-	fmt.Println("Result:")
-	fmt.Println(jsonString)
-
-	if jsonString == "null" {
-		msg := "Patient does not exist"
 		fmt.Println(msg)
 		return patient, errors.New(msg)
 	}
@@ -257,22 +237,38 @@ func GetInsuranceCompany(stub shim.ChaincodeStubInterface, uzovicode string) (In
 		return company, errors.New(msg)
 	}
 
-	jsonString := string(response.Payload)
-	fmt.Println("Result:")
-	fmt.Println(jsonString)
-
-	if jsonString == "null" {
-		msg := "Insurance company does not exist"
-		fmt.Println(msg)
-		return company, errors.New(msg)
-	}
-
 	err = json.Unmarshal(response.Payload, &company)
 	if err != nil {
 		return company, err
 	}
 
 	return company, nil
+}
+
+// GetWallet ...
+//========================================================================================================================
+func GetWallet(stub shim.ChaincodeStubInterface, id string) (CurecoinWallet, error) {
+	var wallet CurecoinWallet
+	repo, err := GetDeployedChaincode(stub, "curecoinwallet")
+	if err != nil {
+		return wallet, err
+	}
+
+	function := "query"
+	invokeArgs := util.ToChaincodeArgs(function, id)
+	response := stub.InvokeChaincode(repo, invokeArgs, "")
+	if response.Status != shim.OK {
+		msg := "Failed to get state for curecoinwallet chain"
+		fmt.Println(msg)
+		return wallet, errors.New(msg)
+	}
+
+	err = json.Unmarshal(response.Payload, &wallet)
+	if err != nil {
+		return wallet, err
+	}
+
+	return wallet, nil
 }
 
 // CheckYear ...
