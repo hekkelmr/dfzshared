@@ -112,6 +112,7 @@ type AssignedPolicies struct {
 type Retourbericht struct {
 	Retourcode     string `json:"retourcode"`
 	Restant        int64  `json:"restant"`
+	Vergoed        int64  `json:"vergoed"`
 	RestantEenheid string `json:"restanteenheid"`
 	Bijbetalen     int64  `json:"bijbetalen"`
 	Bericht        string `json:"bericht"`
