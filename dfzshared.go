@@ -110,6 +110,7 @@ type AssignedPolicies struct {
 
 // Retourbericht ... The outcome message for a healthclaim
 type Retourbericht struct {
+	AgbCode        string `json:"agbcode"`
 	Retourcode     string `json:"retourcode"`
 	Restant        int64  `json:"restant"`
 	Vergoed        int64  `json:"vergoed"`
