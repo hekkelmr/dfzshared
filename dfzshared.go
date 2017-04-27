@@ -299,6 +299,26 @@ func NewWalletID(stub shim.ChaincodeStubInterface) (string, error) {
 	return wallet.ID, nil
 }
 
+// Transfer
+func Transfer(stub shim.ChaincodeStubInterface, from string, to string, value int64, data string) error {
+	walletChain, err := GetDeployedChaincode(stub, "curecoinwallet")
+	if err != nil {
+		msg := "Curecoinwallet contract does not exist"
+		fmt.Println(msg)
+		return errors.New(msg)
+	}
+
+	function := "transfer"
+	amount := strconv.FormatInt(value, 10)
+	fmt.Printf("From %s to %s amount %s\n", from, to, amount)
+	invokeArgs := util.ToChaincodeArgs(function, from, to, amount, data)
+	respWallet := stub.InvokeChaincode(walletChain, invokeArgs, "")
+	if respWallet.Status != shim.OK {
+		return errors.New(respWallet.Message)
+	}
+	return nil
+}
+
 // CheckYear ...
 func CheckYear(year string) (uint64, error) {
 	intYear, err := strconv.ParseUint(year, 10, 32)
