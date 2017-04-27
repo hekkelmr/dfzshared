@@ -299,7 +299,7 @@ func NewWalletID(stub shim.ChaincodeStubInterface) (string, error) {
 	return wallet.ID, nil
 }
 
-// Transfer
+// Transfer ...
 func Transfer(stub shim.ChaincodeStubInterface, from string, to string, value int64, data string) error {
 	walletChain, err := GetDeployedChaincode(stub, "curecoinwallet")
 	if err != nil {
