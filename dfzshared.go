@@ -105,12 +105,13 @@ type InsuranceCompany struct {
 }
 
 type SimpleEHR struct {
-	Patient   Person     `json:"patient"`
-	Submitter CareGiver  `json:"submitter"`
-	Diagnosis string     `json:"diagnosis"`
-	Treatment string     `json:"treatment"`
-	Claim     Declaratie `json:"claim"`
-	Previous  string     `json:"previous"`
+	TreatmentID string     `json:"treatmentid"`
+	Patient     Person     `json:"patient"`
+	Submitter   CareGiver  `json:"submitter"`
+	Diagnosis   string     `json:"diagnosis"`
+	Treatment   string     `json:"treatment"`
+	Claim       Declaratie `json:"claim"`
+	PreviousID  string     `json:"previousid"`
 }
 
 type AssignedPolicies struct {
