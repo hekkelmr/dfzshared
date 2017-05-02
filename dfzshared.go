@@ -299,8 +299,8 @@ func NewWalletID(stub shim.ChaincodeStubInterface) (string, error) {
 	return wallet.ID, nil
 }
 
-// Transfer ...
-func Transfer(stub shim.ChaincodeStubInterface, from string, to string, value int64, data string) error {
+// MakePayment ...
+func MakePayment(stub shim.ChaincodeStubInterface, from string, to string, value int64, data string) error {
 	walletChain, err := GetDeployedChaincode(stub, "curecoinwallet")
 	if err != nil {
 		msg := "Curecoinwallet contract does not exist"
@@ -308,10 +308,31 @@ func Transfer(stub shim.ChaincodeStubInterface, from string, to string, value in
 		return errors.New(msg)
 	}
 
-	function := "transfer"
+	function := "makepayment"
 	amount := strconv.FormatInt(value, 10)
 	fmt.Printf("From %s to %s amount %s\n", from, to, amount)
 	invokeArgs := util.ToChaincodeArgs(function, from, to, amount, data)
+	respWallet := stub.InvokeChaincode(walletChain, invokeArgs, "")
+	if respWallet.Status != shim.OK {
+		return errors.New(respWallet.Message)
+	}
+	return nil
+}
+
+// MakeCombinedPayment ...
+func MakeCombinedPayment(stub shim.ChaincodeStubInterface, from1 string, to string, valueFrom1 int64, from2 string, valueFrom2 int64, data string) error {
+	walletChain, err := GetDeployedChaincode(stub, "curecoinwallet")
+	if err != nil {
+		msg := "Curecoinwallet contract does not exist"
+		fmt.Println(msg)
+		return errors.New(msg)
+	}
+
+	function := "makecombinedpayment"
+	amount1 := strconv.FormatInt(valueFrom1, 10)
+	amount2 := strconv.FormatInt(valueFrom2, 10)
+
+	invokeArgs := util.ToChaincodeArgs(function, from1, to, amount1, from2, amount2, data)
 	respWallet := stub.InvokeChaincode(walletChain, invokeArgs, "")
 	if respWallet.Status != shim.OK {
 		return errors.New(respWallet.Message)
