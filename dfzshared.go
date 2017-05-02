@@ -104,6 +104,14 @@ type InsuranceCompany struct {
 	WalletID  string `json:"walletid"`
 }
 
+type SimpleEHR struct {
+	Patient   Person     `json:"patient"`
+	Submitter CareGiver  `json:"submitter"`
+	Diagnosis string     `json:"diagnosis"`
+	Treatment string     `json:"treatment"`
+	Claim     Declaratie `json:"claim"`
+}
+
 type AssignedPolicies struct {
 	years []PolicyYear `json:"years"`
 }
