@@ -17,101 +17,101 @@ import (
 
 // EIVoorloopRecord ... The header record of a healthclaim
 type EIVoorloopRecord struct {
-	AGBServicebureau         string `json:"agbservicebureau"`
-	AGBZorgverlener          string `json:"agbzorgverlener"`
-	AGBPraktijk              string `json:"agbpraktijk"`
-	AGBInstelling            string `json:"agbinstelling"`
-	IndentificatieBetalenAan string `json:"indetificatiebetalenaan"`
+	AGBServicebureau        string `json:"AGBServicebureau"`
+	AGBZorgverlener         string `json:"AGBZorgverlener"`
+	AGBPraktijk             string `json:"AGBPraktijk"`
+	AGBInstelling           string `json:"AGBInstelling"`
+	IdentificatieBetalenAan string `json:"IdentificatieBetalenAan"`
 }
 
 // EIVerzekerdeRecord ... The subject of a healthclaim
 type EIVerzekerdeRecord struct {
-	Bsncode string `json:"bsncode"`
-	Naam    string `json:"naam"`
+	Bsncode string `json:"Bsncode"`
+	Naam    string `json:"Naam"`
 }
 
 // EIPrestatieRecord ... The details of a healthclaim
 type EIPrestatieRecord struct {
-	Prestatiecodelijst string    `json:"prestatiecodelijst"`
-	Prestatiecode      string    `json:"prestatiecode"`
-	TariefPrestatie    int64     `json:"tariefprestatie"`
-	BerekendBedrag     int64     `json:"berekendbedrag"`
-	DatumPrestatie     time.Time `json:"datumprestatie"`
+	Prestatiecodelijst string    `json:"Prestatiecodelijst"`
+	Prestatiecode      string    `json:"Prestatiecode"`
+	TariefPrestatie    int64     `json:"TariefPrestatie"`
+	BerekendBedrag     int64     `json:"BerekendBedrag"`
+	DatumPrestatie     time.Time `json:"DatumPrestatie"`
 }
 
 // Declaratie ... Combined healtclaim structure
 type Declaratie struct {
-	Voorlooprecord   EIVoorloopRecord   `json:"voorlooprecord"`
-	VerzekerdeRecord EIVerzekerdeRecord `json:"verzekerderecord"`
-	PrestatieRecord  EIPrestatieRecord  `json:"prestatierecord"`
+	Voorlooprecord   EIVoorloopRecord   `json:"Voorlooprecord"`
+	Verzekerderecord EIVerzekerdeRecord `json:"Verzekerderecord"`
+	Prestatierecord  EIPrestatieRecord  `json:"Prestatierecord"`
 }
 
 // ContractStatus ...
 // The status of a policycontract
 type ContractStatus struct {
-	Remaining  int64      `json:"remaining"`
-	Unity      string     `json:"unity"`
-	Declaratie Declaratie `json:"declaratie"`
+	Remaining  int64      `json:"Remaining"`
+	Unity      string     `json:"Unity"`
+	Declaratie Declaratie `json:"Declaratie"`
 }
 
 // PolicyYear ...
 // The name of the policycontrcat per year
 type PolicyYear struct {
-	Year               string `json:"year"`
-	PolicyContractName string `json:"policycontractname"`
+	Year               string `json:"Year"`
+	PolicyContractName string `json:"PolicyContractName"`
 }
 
 // PatientPolicyStatus ...
 // The status of a PatientPolicy combined wit the ContractStatus
 type PatientPolicyStatus struct {
-	PatientPolicy  PatientPolicy  `json:"patientpolicy"`
-	ContractStatus ContractStatus `json:"contractstatus"`
+	PatientPolicy  PatientPolicy  `json:"PatientPolicy"`
+	ContractStatus ContractStatus `json:"ContractStatus"`
 }
 
 // PatientPolicy ...
 // The policy a patient has in a given year
 type PatientPolicy struct {
-	Bsncode    string     `json:"bsncode"`
-	PolicyYear PolicyYear `json:"policyyear"`
+	Bsncode    string     `json:"Bsncode"`
+	PolicyYear PolicyYear `json:"PolicyYear"`
 }
 
 // Chain ...
 // Technical contract to resolve the logical chain name to the phsyical one
 type Chain struct {
-	Name        string `json:"name"`
-	ChaincodeID string `json:"chaincodeid"`
+	Name        string `json:"Name"`
+	ChaincodeID string `json:"ChaincodeId"`
 }
 
 // Person ...
 type Person struct {
-	Bsncode  string    `json:"bsncode"`
-	Name     string    `json:"name"`
-	Dob      time.Time `json:"dob"`
-	Dod      time.Time `json:"dod"`
-	WalletID string    `json:"walletid"`
+	Bsncode  string    `json:"Bsncode"`
+	Name     string    `json:"Name"`
+	Dob      time.Time `json:"Dob"`
+	Dod      time.Time `json:"Dod"`
+	WalletID string    `json:"WalletID"`
 }
 
 type CareGiver struct {
-	AgbCode  string `json:"agbcode"`
-	Name     string `json:"name"`
-	WalletID string `json:"walletid"`
+	AgbCode  string `json:"AgbCode"`
+	Name     string `json:"Name"`
+	WalletID string `json:"WalletID"`
 }
 
 type InsuranceCompany struct {
-	UzoviCode string `json:"uzovicode"`
-	Name      string `json:"name"`
-	Prefix    string `json:"prefix"`
-	WalletID  string `json:"walletid"`
+	UzoviCode string `json:"UzoviCode"`
+	Name      string `json:"Name"`
+	Prefix    string `json:"Prefix"`
+	WalletID  string `json:"WalletID"`
 }
 
 type SimpleEHR struct {
-	TreatmentID string     `json:"treatmentid"`
-	Patient     Person     `json:"patient"`
-	Submitter   CareGiver  `json:"submitter"`
-	Diagnosis   string     `json:"diagnosis"`
-	Treatment   string     `json:"treatment"`
-	Claim       Declaratie `json:"claim"`
-	PreviousID  string     `json:"previousid"`
+	TreatmentID string     `json:"TreatmentID"`
+	Patient     Person     `json:"Patient"`
+	Submitter   CareGiver  `json:"Submitter"`
+	Diagnosis   string     `json:"Diagnosis"`
+	Treatment   string     `json:"Treatment"`
+	Claim       Declaratie `json:"Claim"`
+	PreviousID  string     `json:"PreviousID"`
 }
 
 type AssignedPolicies struct {
@@ -120,39 +120,39 @@ type AssignedPolicies struct {
 
 // Retourbericht ... The outcome message for a healthclaim
 type Retourbericht struct {
-	AgbCode        string `json:"agbcode"`
-	Retourcode     string `json:"retourcode"`
-	Restant        int64  `json:"restant"`
-	Vergoed        int64  `json:"vergoed"`
-	RestantEenheid string `json:"restanteenheid"`
-	Bijbetalen     int64  `json:"bijbetalen"`
-	Bericht        string `json:"bericht"`
+	AgbCode        string `json:"AgbCode"`
+	Retourcode     string `json:"Retourcode"`
+	Restant        int64  `json:"Restant"`
+	Vergoed        int64  `json:"Vergoed"`
+	RestantEenheid string `json:"RestantEenheid"`
+	Bijbetalen     int64  `json:"Bijbetalen"`
+	Bericht        string `json:"Bericht"`
 }
 
 type ContractedTreatment struct {
-	Prestatiecodelijst string `json:"prestatiecodelijst"`
-	Prestatiecode      string `json:"prestatiecode"`
-	TariefPrestatie    int64  `json:"tariefprestatie"`
-	Omschrijving       string `json:"omschrijving"`
+	Prestatiecodelijst string `json:"Prestatiecodelijst"`
+	Prestatiecode      string `json:"Prestatiecode"`
+	TariefPrestatie    int64  `json:"TariefPrestatie"`
+	Omschrijving       string `json:"Omschrijving"`
 }
 
 type HealthCareContract struct {
-	UzoviCode            string                `json:"uzovicode"`
-	AgbCode              string                `json:"agbcode"`
-	Year                 string                `json:"year"`
-	ContractedTreatments []ContractedTreatment `json:"contractedtreatments"`
+	UzoviCode            string                `json:"UzoviCode"`
+	AgbCode              string                `json:"AgbCode"`
+	Year                 string                `json:"Year"`
+	ContractedTreatments []ContractedTreatment `json:"ContractedTreatments"`
 }
 
 type WalletTransaction struct {
-	From   string `json:"from"`
-	Amount int64  `json:"amount"`
-	Data   string `json:"data"`
+	From   string `json:"From"`
+	Amount int64  `json:"Amount"`
+	Data   string `json:"Data"`
 }
 
 type CurecoinWallet struct {
-	ID                string            `json:"id"`
-	Balance           int64             `json:"balance"`
-	LatestTransaction WalletTransaction `json:"latesttransaction"`
+	ID                string            `json:"ID"`
+	Balance           int64             `json:"Balance"`
+	LatestTransaction WalletTransaction `json:"LatestTransaction"`
 }
 
 // GetDeployedChaincode ... Get a deployed chain
