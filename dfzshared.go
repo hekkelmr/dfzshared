@@ -92,13 +92,13 @@ type Person struct {
 }
 
 type CareGiver struct {
-	AgbCode  string `json:"AgbCode"`
+	Agbcode  string `json:"Agbcode"`
 	Name     string `json:"Name"`
 	WalletID string `json:"WalletID"`
 }
 
 type InsuranceCompany struct {
-	UzoviCode string `json:"UzoviCode"`
+	Uzovicode string `json:"Uzovicode"`
 	Name      string `json:"Name"`
 	Prefix    string `json:"Prefix"`
 	WalletID  string `json:"WalletID"`
