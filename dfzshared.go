@@ -112,6 +112,7 @@ type SimpleEHR struct {
 	Treatment   string     `json:"Treatment"`
 	Claim       Declaratie `json:"Claim"`
 	PreviousID  string     `json:"PreviousID"`
+	Reference   string     `json:"Reference"`
 }
 
 type AssignedPolicies struct {
