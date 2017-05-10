@@ -94,6 +94,8 @@ type Person struct {
 type CareGiver struct {
 	Agbcode  string `json:"Agbcode"`
 	Name     string `json:"Name"`
+	Type     string `json:"Type"`
+	Soort    string `json:"Soort"`
 	WalletID string `json:"WalletID"`
 }
 
