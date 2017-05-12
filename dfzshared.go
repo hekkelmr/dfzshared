@@ -115,6 +115,7 @@ type SimpleEHR struct {
 	Claim       Declaratie `json:"Claim"`
 	PreviousID  string     `json:"PreviousID"`
 	Reference   string     `json:"Reference"`
+	Uitgevoerd  time.Time  `json:"Uitgevoerd"`
 }
 
 type AssignedPolicies struct {
@@ -133,11 +134,10 @@ type Retourbericht struct {
 }
 
 type ContractedTreatment struct {
-	Prestatiecodelijst string    `json:"Prestatiecodelijst"`
-	Prestatiecode      string    `json:"Prestatiecode"`
-	TariefPrestatie    int64     `json:"TariefPrestatie"`
-	Omschrijving       string    `json:"Omschrijving"`
-	Uitgevoerd         time.Time `json:"Uitgevoerd"`
+	Prestatiecodelijst string `json:"Prestatiecodelijst"`
+	Prestatiecode      string `json:"Prestatiecode"`
+	TariefPrestatie    int64  `json:"TariefPrestatie"`
+	Omschrijving       string `json:"Omschrijving"`
 }
 
 type HealthCareContract struct {
