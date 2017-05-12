@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/hyperledger/fabric/common/util"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
@@ -107,15 +108,15 @@ type InsuranceCompany struct {
 }
 
 type SimpleEHR struct {
-	TreatmentID string     `json:"TreatmentID"`
-	Patient     Person     `json:"Patient"`
-	Submitter   CareGiver  `json:"Submitter"`
-	Diagnosis   string     `json:"Diagnosis"`
-	Treatment   string     `json:"Treatment"`
-	Claim       Declaratie `json:"Claim"`
-	PreviousID  string     `json:"PreviousID"`
-	Reference   string     `json:"Reference"`
-	Uitgevoerd  time.Time  `json:"Uitgevoerd"`
+	TreatmentID string              `json:"TreatmentID"`
+	Patient     Person              `json:"Patient"`
+	Submitter   CareGiver           `json:"Submitter"`
+	Diagnosis   string              `json:"Diagnosis"`
+	Treatment   string              `json:"Treatment"`
+	Claim       Declaratie          `json:"Claim"`
+	PreviousID  string              `json:"PreviousID"`
+	Reference   string              `json:"Reference"`
+	Uitgevoerd  timestamp.Timestamp `json:"Uitgevoerd"`
 }
 
 type AssignedPolicies struct {
