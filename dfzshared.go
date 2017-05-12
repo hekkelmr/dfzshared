@@ -133,10 +133,11 @@ type Retourbericht struct {
 }
 
 type ContractedTreatment struct {
-	Prestatiecodelijst string `json:"Prestatiecodelijst"`
-	Prestatiecode      string `json:"Prestatiecode"`
-	TariefPrestatie    int64  `json:"TariefPrestatie"`
-	Omschrijving       string `json:"Omschrijving"`
+	Prestatiecodelijst string    `json:"Prestatiecodelijst"`
+	Prestatiecode      string    `json:"Prestatiecode"`
+	TariefPrestatie    int64     `json:"TariefPrestatie"`
+	Omschrijving       string    `json:"Omschrijving"`
+	Uitgevoerd         time.Time `json:"Uitgevoerd"`
 }
 
 type HealthCareContract struct {
