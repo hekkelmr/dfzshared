@@ -22,6 +22,7 @@ type EIVoorloopRecord struct {
 	AGBPraktijk             string `json:"AGBPraktijk"`
 	AGBInstelling           string `json:"AGBInstelling"`
 	IdentificatieBetalenAan string `json:"IdentificatieBetalenAan"`
+	ReferentieBehandeling   string `json:"ReferentieBehandeling"`
 }
 
 // EIVerzekerdeRecord ... The subject of a healthclaim
