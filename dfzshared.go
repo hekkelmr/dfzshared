@@ -158,6 +158,7 @@ type HealthCareContract struct {
 	UzoviCode            string                `json:"UzoviCode"`
 	AgbCode              string                `json:"AgbCode"`
 	Year                 string                `json:"Year"`
+	MaximumPerYear       int64                 `json:"MaximumPerYear"`
 	ContractedTreatments []ContractedTreatment `json:"ContractedTreatments"`
 }
 
