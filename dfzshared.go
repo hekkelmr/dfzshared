@@ -15,18 +15,6 @@ import (
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
 
-// PolicyContractChaincode example simple Chaincode implementation
-type PolicyContractChaincode struct {
-	UzoviCode             string
-	ContractCode          string
-	SupportedHealthArea   string
-	MaximumTreatmentsYear int64
-	ChainName             string
-	Unity                 string
-	Factor                float32
-	Stub                  shim.ChaincodeStubInterface
-}
-
 // EIVoorloopRecord ... The header record of a healthclaim
 type EIVoorloopRecord struct {
 	AGBServicebureau        string `json:"AGBServicebureau"`
