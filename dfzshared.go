@@ -540,7 +540,7 @@ func PolicyContract_doClaim(stub shim.ChaincodeStubInterface, policyContract Pol
 		return policyContract_createResponse("FOUT", 0, 0, "", 0, err.Error(), "")
 	}
 
-	response := policyContract_validateClaim(stub, policyContract, args)
+	response := PolicyContract_validateClaim(stub, policyContract, args)
 	json.Unmarshal(response.Payload, &antwoord)
 	if antwoord.Retourcode == "FOUT" {
 		return shim.Error(antwoord.Bericht)
