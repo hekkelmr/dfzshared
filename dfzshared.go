@@ -385,7 +385,7 @@ func CheckYear(year string) (uint64, error) {
 
 // Query ...
 //========================================================================================================================
-func policyContract_query(stub shim.ChaincodeStubInterface, policyContract PolicyContract, args []string) pb.Response {
+func PolicyContract_query(stub shim.ChaincodeStubInterface, policyContract PolicyContract, args []string) pb.Response {
 	fmt.Println("########## Query ##########")
 	bsncode := args[0]
 	year := args[1]
@@ -403,7 +403,7 @@ func policyContract_query(stub shim.ChaincodeStubInterface, policyContract Polic
 
 // Query ...
 //========================================================================================================================
-func policyContract_getUZOVI(policyContract PolicyContract) pb.Response {
+func PolicyContract_getUZOVI(policyContract PolicyContract) pb.Response {
 	fmt.Println("########## getUZOVI ##########")
 	bytes := []byte(policyContract.UzoviCode)
 	return shim.Success(bytes)
@@ -411,7 +411,7 @@ func policyContract_getUZOVI(policyContract PolicyContract) pb.Response {
 
 // Init values ...
 //========================================================================================================
-func policyContract_initValues(stub shim.ChaincodeStubInterface, policyContract PolicyContract, args []string) pb.Response {
+func PolicyContract_initValues(stub shim.ChaincodeStubInterface, policyContract PolicyContract, args []string) pb.Response {
 	fmt.Println("########## Init  values ##########")
 	bsncode := args[0]
 	year := args[1]
@@ -433,7 +433,7 @@ func policyContract_initValues(stub shim.ChaincodeStubInterface, policyContract 
 
 // Check if the claim is covered ...
 //========================================================================================================================
-func policyContract_validateClaim(stub shim.ChaincodeStubInterface, policyContract PolicyContract, args []string) pb.Response {
+func PolicyContract_validateClaim(stub shim.ChaincodeStubInterface, policyContract PolicyContract, args []string) pb.Response {
 	var declaratie Declaratie
 
 	fmt.Println("########## Validate Claim ##########")
@@ -527,7 +527,7 @@ func policyContract_createResponse(result string, restant int64, vergoed int64, 
 
 // Execute the claim ...
 //========================================================================================================================
-func policyContract_doClaim(stub shim.ChaincodeStubInterface, policyContract PolicyContract, args []string) pb.Response {
+func PolicyContract_doClaim(stub shim.ChaincodeStubInterface, policyContract PolicyContract, args []string) pb.Response {
 	fmt.Println("########## Do Claim ##########")
 	var declaratie Declaratie
 	var antwoord Retourbericht
