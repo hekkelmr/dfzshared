@@ -416,7 +416,7 @@ func policyContract_setBsnBalanceState(stub shim.ChaincodeStubInterface, policyC
 
 // Get State of AGB...
 //========================================================================================================================
-func policyContract_getBalanceState(stub shim.ChaincodeStubInterface, policyContractRepository string, key string) (int64, error) {
+func PolicyContract_getBalanceState(stub shim.ChaincodeStubInterface, policyContractRepository string, key string) (int64, error) {
 
 	myRepo, err := GetDeployedChaincode(stub, policyContractRepository)
 	if err != nil {
