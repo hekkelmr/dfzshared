@@ -477,6 +477,7 @@ func PolicyContract_validateClaim(stub shim.ChaincodeStubInterface, policyContra
 	contractedTreatment, err := policyContract_getContracted(stub, policyContract, declaratie, year)
 	if err != nil {
 		fmt.Println("Geen contract afgesloten")
+		contractedTreatment = ContractedTreatment{"", "", 0, ""}
 	}
 
 	var noclaim int64
