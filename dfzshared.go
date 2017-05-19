@@ -95,6 +95,7 @@ type Person struct {
 	Dob      time.Time `json:"Dob"`
 	Dod      time.Time `json:"Dod"`
 	WalletID string    `json:"WalletID"`
+	ID       string    `json:"ID"`
 }
 
 type CareGiver struct {
@@ -103,6 +104,7 @@ type CareGiver struct {
 	Type     string `json:"Type"`
 	Soort    string `json:"Soort"`
 	WalletID string `json:"WalletID"`
+	ID       string `json:"ID"`
 }
 
 type InsuranceCompany struct {
@@ -110,6 +112,7 @@ type InsuranceCompany struct {
 	Name      string `json:"Name"`
 	Prefix    string `json:"Prefix"`
 	WalletID  string `json:"WalletID"`
+	ID        string `json:"ID"`
 }
 
 type SimpleEHR struct {
