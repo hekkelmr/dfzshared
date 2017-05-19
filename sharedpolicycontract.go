@@ -315,7 +315,9 @@ func policyContract_setAgbBalanceState(stub shim.ChaincodeStubInterface, policyC
 		return errors.New("Error getting policycontractrepository")
 	}
 
-	invokeArgs := util.ToChaincodeArgs("set", key, string(amount))
+	val := strconv.FormatInt(amount, 10)
+	fmt.Printf("Amount will be %s", val)
+	invokeArgs := util.ToChaincodeArgs("set", key, val)
 	response := stub.InvokeChaincode(myRepo, invokeArgs, "")
 	if response.Status != shim.OK {
 		fmt.Printf("Error saving via policycontactrepositor\n")
@@ -344,7 +346,9 @@ func policyContract_setContractBalanceState(stub shim.ChaincodeStubInterface, po
 		return errors.New("Error getting policycontractrepository")
 	}
 
-	invokeArgs := util.ToChaincodeArgs("set", key, string(amount))
+	val := strconv.FormatInt(amount, 10)
+	fmt.Printf("Amount will be %s", val)
+	invokeArgs := util.ToChaincodeArgs("set", key, val)
 	response := stub.InvokeChaincode(myRepo, invokeArgs, "")
 	if response.Status != shim.OK {
 		fmt.Printf("Error saving via policycontactrepositor\n")
@@ -375,7 +379,7 @@ func policyContract_setCompanyBalanceState(stub shim.ChaincodeStubInterface, pol
 		return errors.New("Error getting policycontractrepository")
 	}
 
-	val := string(amount)
+	val := strconv.FormatInt(amount, 10)
 	fmt.Printf("Amount will be %s", val)
 	invokeArgs := util.ToChaincodeArgs("set", key, val)
 	response := stub.InvokeChaincode(myRepo, invokeArgs, "")
@@ -405,7 +409,7 @@ func policyContract_setBsnBalanceState(stub shim.ChaincodeStubInterface, policyC
 		return errors.New("Error getting policycontractrepository")
 	}
 
-	val := string(amount)
+	val := strconv.FormatInt(amount, 10)
 	fmt.Printf("Amount will be %s", val)
 	invokeArgs := util.ToChaincodeArgs("set", key, val)
 	response := stub.InvokeChaincode(myRepo, invokeArgs, "")
