@@ -154,12 +154,9 @@ type ContractedTreatment struct {
 	Omschrijving       string `json:"Omschrijving"`
 }
 
-type HealthCareContract struct {
-	UzoviCode            string                `json:"UzoviCode"`
-	AgbCode              string                `json:"AgbCode"`
-	Year                 string                `json:"Year"`
-	MaximumPerYear       int64                 `json:"MaximumPerYear"`
-	ContractedTreatments []ContractedTreatment `json:"ContractedTreatments"`
+type HealthCareContractRouter struct {
+	UzoviCode string `json:"UzoviCode"`
+	RESTUrl   string `json:"RESTSUrl"`
 }
 
 type WalletTransaction struct {
@@ -804,7 +801,7 @@ func policyContract_getBalanceState(stub shim.ChaincodeStubInterface, policyCont
 //========================================================================================================================
 func policyContract_getContracted(stub shim.ChaincodeStubInterface, policyContract PolicyContract, request Declaratie, year string) (ContractedTreatment, error) {
 	var treatment ContractedTreatment
-	myRepo, err := GetDeployedChaincode(stub, "healthcarecontract")
+	myRepo, err := GetDeployedChaincode(stub, "healthcarecontractrouter")
 	if err != nil {
 		fmt.Printf("Error getting healthcare contractrepository\n")
 	}
