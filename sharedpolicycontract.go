@@ -358,6 +358,8 @@ func policyContract_setContractBalanceState(stub shim.ChaincodeStubInterface, po
 //========================================================================================================
 func policyContract_setCompanyBalanceState(stub shim.ChaincodeStubInterface, policyContract PolicyContract, year string, amount int64) error {
 
+	fmt.Printf("Company %s balance set add amount:%d\n", policyContract.UzoviCode, amount)
+
 	key := "UZOVIBAL-" + policyContract.UzoviCode + ":" + year
 	oldAmount, err := PolicyContract_getBalanceState(stub, policyContract.PolicyContractRepository, key)
 	if err != nil {
