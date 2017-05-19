@@ -375,7 +375,9 @@ func policyContract_setCompanyBalanceState(stub shim.ChaincodeStubInterface, pol
 		return errors.New("Error getting policycontractrepository")
 	}
 
-	invokeArgs := util.ToChaincodeArgs("set", key, string(amount))
+	val := string(amount)
+	fmt.Printf("Amount will be %s", val)
+	invokeArgs := util.ToChaincodeArgs("set", key, val)
 	response := stub.InvokeChaincode(myRepo, invokeArgs, "")
 	if response.Status != shim.OK {
 		fmt.Printf("Error saving via policycontactrepositor\n")
