@@ -428,6 +428,7 @@ func PolicyContract_getBalanceState(stub shim.ChaincodeStubInterface, policyCont
 		return 0, errors.New("error querying policycontactrepository")
 	}
 
+	fmt.Println(string(response.Payload))
 	var amount int64
 	json.Unmarshal(response.Payload, &amount)
 
