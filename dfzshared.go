@@ -468,13 +468,17 @@ func PolicyContract_validateClaim(stub shim.ChaincodeStubInterface, policyContra
 
 	// Check AGB
 	fmt.Println("Checking AGB")
-	_, err = GetCaregiver(stub, declaratie.Voorlooprecord.AGBPraktijk)
+	agbcode := declaratie.Voorlooprecord.AGBPraktijk
+	_, err = GetCaregiver(stub, agbcode)
 	if err != nil {
 		return policyContract_createResponse("FOUT", 0, 0, "", 0, err.Error(), "")
 	}
 
 	// Check suppier agreements ...
-	contractedTreatment, err := policyContract_getContracted(stub, policyContract, declaratie, year)
+	prslijst := declaratie.Prestatierecord.Prestatiecodelijst
+	prscode := declaratie.Prestatierecord.Prestatiecode
+	datum := declaratie.Prestatierecord.DatumPrestatie.String()[0:10]
+	contractedTreatment, err := policyContract_getContracted(stub, policyContract.UzoviCode, agbcode, prslijst, prscode, datum)
 	if err != nil {
 		fmt.Println("Geen contract afgesloten")
 		contractedTreatment = ContractedTreatment{"", "", 0, ""}
@@ -801,15 +805,14 @@ func policyContract_getBalanceState(stub shim.ChaincodeStubInterface, policyCont
 
 // Check Coverage...
 //========================================================================================================================
-func policyContract_getContracted(stub shim.ChaincodeStubInterface, policyContract PolicyContract, request Declaratie, year string) (ContractedTreatment, error) {
+func policyContract_getContracted(stub shim.ChaincodeStubInterface, uzovicode string, agbcode string, prestielijst string, prestatiecode string, date string) (ContractedTreatment, error) {
 	var treatment ContractedTreatment
 	myRepo, err := GetDeployedChaincode(stub, "healthcarecontractrouter")
 	if err != nil {
 		fmt.Printf("Error getting healthcare contractrepository\n")
 	}
-	agbcode := request.Voorlooprecord.AGBPraktijk
 
-	invokeArgs := util.ToChaincodeArgs("queryContractedTreatment", policyContract.UzoviCode, agbcode, year, request.Prestatierecord.Prestatiecodelijst, request.Prestatierecord.Prestatiecode)
+	invokeArgs := util.ToChaincodeArgs("queryContractedTreatment", uzovicode, agbcode, date, prestielijst, prestatiecode)
 	response := stub.InvokeChaincode(myRepo, invokeArgs, "")
 	if response.Status != shim.OK {
 		msg := "Error query on healthcare contract"
