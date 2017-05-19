@@ -244,60 +244,6 @@ func PolicyContract_doClaim(stub shim.ChaincodeStubInterface, policyContract Pol
 	return shim.Success(response.Payload)
 }
 
-// Get AGB balance state...
-//========================================================================================================
-func PolicyContract_getAGBBalanceState(stub shim.ChaincodeStubInterface, policyContract PolicyContract, args []string) pb.Response {
-	agbcode := args[0]
-	year := args[1]
-	key := "AGBBAL-" + agbcode + ":" + year
-	oldAmount, err := policyContract_getBalanceState(stub, policyContract, key)
-	if err != nil {
-		return shim.Error("error retrieving AGB state")
-	}
-	bal := Balance{oldAmount}
-	value, err := json.Marshal(bal)
-	if err != nil {
-		return shim.Error("error Marshalling amount state")
-	}
-	return shim.Success(value)
-}
-
-// Get Company balance state...
-//========================================================================================================
-func PolicyContract_getCompanyBalanceState(stub shim.ChaincodeStubInterface, policyContract PolicyContract, args []string) pb.Response {
-	uzovicode := args[0]
-	year := args[1]
-	key := "UZOVIBAL-" + uzovicode + ":" + year
-	oldAmount, err := policyContract_getBalanceState(stub, policyContract, key)
-	if err != nil {
-		return shim.Error("error retrieving UZOVI state")
-	}
-	bal := Balance{oldAmount}
-	value, err := json.Marshal(bal)
-	if err != nil {
-		return shim.Error("error Marshalling amount state")
-	}
-	return shim.Success(value)
-}
-
-// Get BSN balance state...
-//========================================================================================================
-func PolicyContract_getBSNBalanceState(stub shim.ChaincodeStubInterface, policyContract PolicyContract, args []string) pb.Response {
-	bsncode := args[0]
-	year := args[1]
-	key := "BSNBAL-" + bsncode + ":" + year
-	oldAmount, err := policyContract_getBalanceState(stub, policyContract, key)
-	if err != nil {
-		return shim.Error("error retrieving BSN state")
-	}
-	bal := Balance{oldAmount}
-	value, err := json.Marshal(bal)
-	if err != nil {
-		return shim.Error("error Marshalling amount state")
-	}
-	return shim.Success(value)
-}
-
 // Set State BSN ...
 //========================================================================================================
 func policyContract_setBsnState(stub shim.ChaincodeStubInterface, policyContract PolicyContract, bsncode string, year string, treatments int64, declaratie Declaratie) error {
@@ -360,7 +306,7 @@ func policyContract_getBsnState(stub shim.ChaincodeStubInterface, policyContract
 func policyContract_setAgbBalanceState(stub shim.ChaincodeStubInterface, policyContract PolicyContract, agbcode string, year string, amount int64) error {
 
 	key := "AGBBAL-" + agbcode + ":" + year
-	oldAmount, err := policyContract_getBalanceState(stub, policyContract, key)
+	oldAmount, err := policyContract_getBalanceState(stub, policyContract.PolicyContractRepository, key)
 	if err != nil {
 		return errors.New("error retrieving AGB state")
 	}
@@ -389,7 +335,7 @@ func policyContract_setContractBalanceState(stub shim.ChaincodeStubInterface, po
 	fmt.Println("########## Set State ##########")
 
 	key := policyContract.ContractCode + ":CTCBAL:" + year
-	oldAmount, err := policyContract_getBalanceState(stub, policyContract, key)
+	oldAmount, err := policyContract_getBalanceState(stub, policyContract.PolicyContractRepository, key)
 	if err != nil {
 		return errors.New("error retrieving AGB state")
 	}
@@ -417,7 +363,7 @@ func policyContract_setContractBalanceState(stub shim.ChaincodeStubInterface, po
 func policyContract_setCompanyBalanceState(stub shim.ChaincodeStubInterface, policyContract PolicyContract, year string, amount int64) error {
 
 	key := "UZOVIBAL-" + policyContract.UzoviCode + ":" + year
-	oldAmount, err := policyContract_getBalanceState(stub, policyContract, key)
+	oldAmount, err := policyContract_getBalanceState(stub, policyContract.PolicyContractRepository, key)
 	if err != nil {
 		return errors.New("error retrieving AGB state")
 	}
@@ -445,7 +391,7 @@ func policyContract_setCompanyBalanceState(stub shim.ChaincodeStubInterface, pol
 func policyContract_setBsnBalanceState(stub shim.ChaincodeStubInterface, policyContract PolicyContract, bsncode string, year string, amount int64) error {
 
 	key := "BSNBAL-" + bsncode + ":" + year
-	oldAmount, err := policyContract_getBalanceState(stub, policyContract, key)
+	oldAmount, err := policyContract_getBalanceState(stub, policyContract.PolicyContractRepository, key)
 	if err != nil {
 		return errors.New("error retrieving BSN state")
 	}
@@ -470,9 +416,9 @@ func policyContract_setBsnBalanceState(stub shim.ChaincodeStubInterface, policyC
 
 // Get State of AGB...
 //========================================================================================================================
-func policyContract_getBalanceState(stub shim.ChaincodeStubInterface, policyContract PolicyContract, key string) (int64, error) {
+func policyContract_getBalanceState(stub shim.ChaincodeStubInterface, policyContractRepository string, key string) (int64, error) {
 
-	myRepo, err := GetDeployedChaincode(stub, policyContract.PolicyContractRepository)
+	myRepo, err := GetDeployedChaincode(stub, policyContractRepository)
 	if err != nil {
 		fmt.Printf("Error getting policycontractrepository\n")
 	}
