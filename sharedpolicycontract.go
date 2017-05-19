@@ -404,6 +404,7 @@ func policyContract_setBsnBalanceState(stub shim.ChaincodeStubInterface, policyC
 	}
 
 	invokeArgs := util.ToChaincodeArgs("set", key, string(amount))
+	fmt.Println(invokeArgs)
 	response := stub.InvokeChaincode(myRepo, invokeArgs, "")
 	if response.Status != shim.OK {
 		fmt.Printf("Error saving via policycontactrepositor\n")
@@ -427,10 +428,7 @@ func PolicyContract_getBalanceState(stub shim.ChaincodeStubInterface, policyCont
 	if response.Status != shim.OK {
 		return 0, errors.New("error querying policycontactrepository")
 	}
-
-	fmt.Println(string(response.Payload))
-	var amount int64
-	json.Unmarshal(response.Payload, &amount)
+	amount, _ := strconv.ParseInt(string(response.Payload), 10, 64)
 
 	return amount, nil
 }
