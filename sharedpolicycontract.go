@@ -364,6 +364,7 @@ func policyContract_setCompanyBalanceState(stub shim.ChaincodeStubInterface, pol
 		return errors.New("error retrieving AGB state")
 	}
 
+	fmt.Printf("Company balance set old amount:%d\n", oldAmount)
 	amount = amount + oldAmount
 
 	myRepo, err := GetDeployedChaincode(stub, policyContract.PolicyContractRepository)
