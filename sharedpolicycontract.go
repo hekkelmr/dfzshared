@@ -15,10 +15,6 @@ import (
 	pb "github.com/hyperledger/fabric/protos/peer"
 )
 
-type Balance struct {
-	Amount int64 `json"Amount"`
-}
-
 // Query ...
 //========================================================================================================================
 func PolicyContract_query(stub shim.ChaincodeStubInterface, policyContract PolicyContract, args []string) pb.Response {
