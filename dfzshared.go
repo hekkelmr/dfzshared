@@ -156,7 +156,7 @@ type ContractedTreatment struct {
 
 type HealthCareContractRouter struct {
 	UzoviCode string `json:"UzoviCode"`
-	RESTUrl   string `json:"RESTSUrl"`
+	RESTUrl   string `json:"RESTUrl"`
 }
 
 type WalletTransaction struct {
