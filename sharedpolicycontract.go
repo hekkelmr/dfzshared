@@ -380,7 +380,8 @@ func policyContract_setCompanyBalanceState(stub shim.ChaincodeStubInterface, pol
 	}
 
 	val := strconv.FormatInt(amount, 10)
-	fmt.Printf("Amount will be %s", val)
+	fmt.Printf("Amount will be %s from %d", val, amount)
+
 	invokeArgs := util.ToChaincodeArgs("set", key, val)
 	response := stub.InvokeChaincode(myRepo, invokeArgs, "")
 	if response.Status != shim.OK {
