@@ -306,7 +306,7 @@ func policyContract_getBsnState(stub shim.ChaincodeStubInterface, policyContract
 func policyContract_setAgbBalanceState(stub shim.ChaincodeStubInterface, policyContract PolicyContract, agbcode string, year string, amount int64) error {
 
 	key := "AGBBAL-" + agbcode + ":" + year
-	oldAmount, err := policyContract_getBalanceState(stub, policyContract.PolicyContractRepository, key)
+	oldAmount, err := PolicyContract_getBalanceState(stub, policyContract.PolicyContractRepository, key)
 	if err != nil {
 		return errors.New("error retrieving AGB state")
 	}
@@ -335,7 +335,7 @@ func policyContract_setContractBalanceState(stub shim.ChaincodeStubInterface, po
 	fmt.Println("########## Set State ##########")
 
 	key := policyContract.ContractCode + ":CTCBAL:" + year
-	oldAmount, err := policyContract_getBalanceState(stub, policyContract.PolicyContractRepository, key)
+	oldAmount, err := PolicyContract_getBalanceState(stub, policyContract.PolicyContractRepository, key)
 	if err != nil {
 		return errors.New("error retrieving AGB state")
 	}
@@ -363,7 +363,7 @@ func policyContract_setContractBalanceState(stub shim.ChaincodeStubInterface, po
 func policyContract_setCompanyBalanceState(stub shim.ChaincodeStubInterface, policyContract PolicyContract, year string, amount int64) error {
 
 	key := "UZOVIBAL-" + policyContract.UzoviCode + ":" + year
-	oldAmount, err := policyContract_getBalanceState(stub, policyContract.PolicyContractRepository, key)
+	oldAmount, err := PolicyContract_getBalanceState(stub, policyContract.PolicyContractRepository, key)
 	if err != nil {
 		return errors.New("error retrieving AGB state")
 	}
@@ -391,7 +391,7 @@ func policyContract_setCompanyBalanceState(stub shim.ChaincodeStubInterface, pol
 func policyContract_setBsnBalanceState(stub shim.ChaincodeStubInterface, policyContract PolicyContract, bsncode string, year string, amount int64) error {
 
 	key := "BSNBAL-" + bsncode + ":" + year
-	oldAmount, err := policyContract_getBalanceState(stub, policyContract.PolicyContractRepository, key)
+	oldAmount, err := PolicyContract_getBalanceState(stub, policyContract.PolicyContractRepository, key)
 	if err != nil {
 		return errors.New("error retrieving BSN state")
 	}
