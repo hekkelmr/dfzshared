@@ -515,6 +515,7 @@ func PolicyContract_validateClaim(stub shim.ChaincodeStubInterface, policyContra
 		msg = msg + "Niet volledig vergoed, u moet zelf bijbetalen\n"
 		noclaim = declaratie.Prestatierecord.BerekendBedrag - covered
 	}
+	msg = msg + policyContract.UzoviCode
 	return policyContract_createResponse("OK", remaining, covered, policyContract.Unity, noclaim, msg, declaratie.Voorlooprecord.AGBPraktijk)
 }
 
