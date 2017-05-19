@@ -165,3 +165,9 @@ type CurecoinWallet struct {
 	Balance           int64             `json:"Balance"`
 	LatestTransaction WalletTransaction `json:"LatestTransaction"`
 }
+
+type AuthorizedEPD struct {
+	Grantor string    `json:"Grantor"`
+	Grantee string    `json:"Grantee"`
+	Expires time.Time `json:"Expires"`
+}
