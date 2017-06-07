@@ -92,6 +92,16 @@ func PolicyContract_validateClaim(stub shim.ChaincodeStubInterface, policyContra
 	year := strconv.Itoa(declaratie.Prestatierecord.DatumPrestatie.Year())
 
 	iets, err := stub.GetHistoryForKey(declaratie.Verzekerderecord.Bsncode + ":" + year)
+	if err == nil {
+		for iets.HasNext() {
+			result, err := iets.Next()
+			if err != nil {
+				fmt.Println("foutje bij iets")
+			}
+			fmt.Println(result)
+		}
+	}
+
 	fmt.Printf("Iets = %s\n", iets)
 
 	currentStatus, err := policyContract_getBsnState(stub, policyContract, patient.Bsncode, year)
