@@ -89,7 +89,7 @@ func PolicyContract_validateClaim(stub shim.ChaincodeStubInterface, policyContra
 
 	// Is there stil funding for this patient?
 	fmt.Println("Checking Credits")
-	year := strconv.Itoa(declaratie.Prestatierecord.DatumPrestatie.Year())
+	year := strconv.Itoa(declaratie.Prestatierecords[0].DatumPrestatie.Year())
 
 	iets, err := stub.GetHistoryForKey(declaratie.Verzekerderecord.Bsncode + ":" + year)
 	if err == nil {
@@ -119,9 +119,9 @@ func PolicyContract_validateClaim(stub shim.ChaincodeStubInterface, policyContra
 	}
 
 	// Check suppier agreements ...
-	prslijst := declaratie.Prestatierecord.Prestatiecodelijst
-	prscode := declaratie.Prestatierecord.Prestatiecode
-	datum := declaratie.Prestatierecord.DatumPrestatie.String()[0:10]
+	prslijst := declaratie.Prestatierecords[0].Prestatiecodelijst
+	prscode := declaratie.Prestatierecords[0].Prestatiecode
+	datum := declaratie.Prestatierecords[0].DatumPrestatie.String()[0:10]
 	contractedTreatment, err := policyContract_getContracted(stub, policyContract.UzoviCode, agbcode, prslijst, prscode, datum)
 	if err != nil {
 		fmt.Println("Geen contract afgesloten")
@@ -134,17 +134,17 @@ func PolicyContract_validateClaim(stub shim.ChaincodeStubInterface, policyContra
 	// Not contracted
 	if contractedTreatment.Prestatiecode == "" {
 		msg = fmt.Sprintf("Geen contractafspraak, maximale vergoeding %d procent\n", int64(policyContract.Factor*100.0))
-		covered = int64((float32(declaratie.Prestatierecord.BerekendBedrag) / 100.0) * policyContract.Factor * 100.0)
+		covered = int64((float32(declaratie.Prestatierecords[0].BerekendBedrag) / 100.0) * policyContract.Factor * 100.0)
 	} else {
 		if covered == 0 {
 			msg = fmt.Sprintf("Deze behandeling bij deze zorgverlener wordt niet vergoed\n")
-		} else if declaratie.Prestatierecord.BerekendBedrag > covered {
+		} else if declaratie.Prestatierecords[0].BerekendBedrag > covered {
 			msg = fmt.Sprintf("Volgens contractafspraak met zorgverlener is het bedrag %.2f\n", float32(covered)/100.0)
-			declaratie.Prestatierecord.BerekendBedrag = covered
+			declaratie.Prestatierecords[0].BerekendBedrag = covered
 		}
 	}
-	if covered > declaratie.Prestatierecord.BerekendBedrag {
-		covered = declaratie.Prestatierecord.BerekendBedrag
+	if covered > declaratie.Prestatierecords[0].BerekendBedrag {
+		covered = declaratie.Prestatierecords[0].BerekendBedrag
 	}
 	remaining := currentStatus.Remaining
 
@@ -159,9 +159,9 @@ func PolicyContract_validateClaim(stub shim.ChaincodeStubInterface, policyContra
 		covered = 0
 	}
 
-	if declaratie.Prestatierecord.BerekendBedrag > covered {
+	if declaratie.Prestatierecords[0].BerekendBedrag > covered {
 		msg = msg + "Niet volledig vergoed, u moet zelf bijbetalen\n"
-		noclaim = declaratie.Prestatierecord.BerekendBedrag - covered
+		noclaim = declaratie.Prestatierecords[0].BerekendBedrag - covered
 	}
 
 	msg = msg + policyContract.UzoviCode
@@ -194,7 +194,7 @@ func PolicyContract_doClaim(stub shim.ChaincodeStubInterface, policyContract Pol
 	if antwoord.Retourcode == "FOUT" {
 		return shim.Error(antwoord.Bericht)
 	}
-	year := strconv.Itoa(declaratie.Prestatierecord.DatumPrestatie.Year())
+	year := strconv.Itoa(declaratie.Prestatierecords[0].DatumPrestatie.Year())
 
 	err = policyContract_setBsnState(stub, policyContract, declaratie.Verzekerderecord.Bsncode, year, antwoord.Restant, declaratie)
 	if err != nil {
