@@ -35,9 +35,9 @@ type EIPrestatieRecord struct {
 
 // Declaratie ... Combined healtclaim structure
 type Declaratie struct {
-	Voorlooprecord   EIVoorloopRecord   `json:"Voorlooprecord"`
-	Verzekerderecord EIVerzekerdeRecord `json:"Verzekerderecord"`
-	Prestatierecord  EIPrestatieRecord  `json:"Prestatierecord"`
+	Voorlooprecord   EIVoorloopRecord    `json:"Voorlooprecord"`
+	Verzekerderecord EIVerzekerdeRecord  `json:"Verzekerderecord"`
+	Prestatierecords []EIPrestatieRecord `json:"Prestatierecords"`
 }
 
 // ContractStatus ...
