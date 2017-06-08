@@ -115,7 +115,6 @@ type CareGiver struct {
 type InsuranceCompany struct {
 	Uzovicode string `json:"Uzovicode"`
 	Name      string `json:"Name"`
-	Prefix    string `json:"Prefix"`
 	WalletID  string `json:"WalletID"`
 	ID        string `json:"ID"`
 }
