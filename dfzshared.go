@@ -66,6 +66,8 @@ type PatientPolicyStatus struct {
 // The policy a patient has in a given year
 type PatientPolicy struct {
 	Bsncode    string     `json:"Bsncode"`
+	HealthArea string     `json:"healtharea"`
+	UzoviCode  string     `json:"uzovicode"`
 	PolicyYear PolicyYear `json:"PolicyYear"`
 }
 
