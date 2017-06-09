@@ -131,7 +131,7 @@ func PolicyContract_validateClaim(stub shim.ChaincodeStubInterface, policyContra
 	var noclaim int64
 	var msg string
 	covered := contractedTreatment.TariefPrestatie
-	percentage := contractedTreatment.Percentage
+	percentage := float32(contractedTreatment.Percentage) / 100.0
 	// Not contracted
 	if contractedTreatment.Herkomst == "" {
 		msg = fmt.Sprintf("Geen contractafspraak, maximale vergoeding %d procent\n", int64(policyContract.Factor*100.0))
@@ -148,8 +148,8 @@ func PolicyContract_validateClaim(stub shim.ChaincodeStubInterface, policyContra
 			msg = fmt.Sprintf("Volgens polisvoorwaarden is het bedrag %.2f\n", float32(covered)/100.0)
 			declaratie.Prestatierecords[0].BerekendBedrag = covered
 		} else {
-			covered = int64((float32(covered) / 100.0) * float32(percentage) * 100.0)
-			msg = fmt.Sprintf("Volgens polisvoorwaarden %d vergoedt: %.2f\n", percentage, float32(covered)/100.0)
+			covered = int64((float32(covered) / 100.0) * percentage * 100.0)
+			msg = fmt.Sprintf("Volgens polisvoorwaarden %d perc. vergoedt: %.2f\n", percentage*100.0, float32(covered)/100.0)
 			declaratie.Prestatierecords[0].BerekendBedrag = covered
 		}
 	}
