@@ -146,13 +146,6 @@ type Retourbericht struct {
 	Bericht        string `json:"Bericht"`
 }
 
-type ContractedTreatment struct {
-	Prestatiecodelijst string `json:"Prestatiecodelijst"`
-	Prestatiecode      string `json:"Prestatiecode"`
-	TariefPrestatie    int64  `json:"TariefPrestatie"`
-	Omschrijving       string `json:"Omschrijving"`
-}
-
 type HealthCareContractRouter struct {
 	UzoviCode string `json:"UzoviCode"`
 	RESTUrl   string `json:"RESTUrl"`
@@ -174,4 +167,20 @@ type AuthorizedEPD struct {
 	Grantor string    `json:"Grantor"`
 	Grantee string    `json:"Grantee"`
 	Expires time.Time `json:"Expires"`
+}
+
+type Agb struct {
+	Agbcode string `json:"agbcode"`
+	Name    string `json:"name"`
+	Type    string `json:"Type"`
+	Soort   string `json:"Soort"`
+}
+
+type ContractedTreatment struct {
+	Prestatiecodelijst string `json:"Prestatiecodelijst"`
+	Prestatiecode      string `json:"Prestatiecode"`
+	TariefPrestatie    int64  `json:"TariefPrestatie"`
+	Omschrijving       string `json:"Omschrijving"`
+	Percentage         string `json:"Percentage"`
+	Herkomst           string `json:"Herkomst"`
 }
