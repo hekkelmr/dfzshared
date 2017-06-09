@@ -35,9 +35,9 @@ type EIPrestatieRecord struct {
 
 // Declaratie ... Combined healtclaim structure
 type Declaratie struct {
-	Bsncode          string              `json:"bsncode"`
-	Area             string              `json:"area"`
-	Year             string              `json:"year"`
+	Bsncode          string              `json:"Bsncode"`
+	Area             string              `json:"Area"`
+	Year             string              `json:"Year"`
 	Voorlooprecord   EIVoorloopRecord    `json:"Voorlooprecord"`
 	Verzekerderecord EIVerzekerdeRecord  `json:"Verzekerderecord"`
 	Prestatierecords []EIPrestatieRecord `json:"Prestatierecords"`
