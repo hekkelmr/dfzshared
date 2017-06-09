@@ -146,11 +146,9 @@ func PolicyContract_validateClaim(stub shim.ChaincodeStubInterface, policyContra
 	} else if contractedTreatment.Herkomst == "Polisvoorwaarden" {
 		if percentage == 0 {
 			msg = fmt.Sprintf("Volgens polisvoorwaarden is het bedrag %.2f\n", float32(covered)/100.0)
-			declaratie.Prestatierecords[0].BerekendBedrag = covered
 		} else {
 			covered = int64((float32(covered) / 100.0) * percentage * 100.0)
 			msg = fmt.Sprintf("Volgens polisvoorwaarden %d perc. vergoedt: %.2f\n", int64(percentage*100.0), float32(covered)/100.0)
-			declaratie.Prestatierecords[0].BerekendBedrag = covered
 		}
 	}
 	if covered > declaratie.Prestatierecords[0].BerekendBedrag {
