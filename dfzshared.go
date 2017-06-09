@@ -181,6 +181,6 @@ type ContractedTreatment struct {
 	Prestatiecode      string `json:"Prestatiecode"`
 	TariefPrestatie    int64  `json:"TariefPrestatie"`
 	Omschrijving       string `json:"Omschrijving"`
-	Percentage         string `json:"Percentage"`
+	Percentage         int64  `json:"Percentage"`
 	Herkomst           string `json:"Herkomst"`
 }
