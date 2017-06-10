@@ -118,62 +118,69 @@ func PolicyContract_validateClaim(stub shim.ChaincodeStubInterface, policyContra
 		return policyContract_createResponse("FOUT", 0, 0, "", 0, err.Error(), "")
 	}
 
+	var totalCovered int64
+	var totalClaimed int64
 	// Check suppier agreements ...
-	prslijst := declaratie.Prestatierecords[0].Prestatiecodelijst
-	prscode := declaratie.Prestatierecords[0].Prestatiecode
-	datum := declaratie.Prestatierecords[0].DatumPrestatie.String()[0:10]
-	contractedTreatment, err := policyContract_getContracted(stub, policyContract.UzoviCode, agbcode, prslijst, prscode, datum)
-	if err != nil {
-		fmt.Println("Geen contract afgesloten")
-		contractedTreatment = ContractedTreatment{"", "", 0, "", 0, ""}
+	for _, prestatieRecord := range declaratie.Prestatierecords {
+		totalClaimed = totalClaimed + prestatieRecord.TariefPrestatie
+		prslijst := prestatieRecord.Prestatiecodelijst
+		prscode := prestatieRecord.Prestatiecode
+		datum := prestatieRecord.DatumPrestatie.String()[0:10]
+		contractedTreatment, err := policyContract_getContracted(stub, policyContract.UzoviCode, agbcode, prslijst, prscode, datum)
+		if err != nil {
+			fmt.Println("Geen contract afgesloten")
+			contractedTreatment = ContractedTreatment{"", "", 0, "", 0, ""}
+		}
+
+		covered := contractedTreatment.TariefPrestatie
+		percentage := float32(contractedTreatment.Percentage) / 100.0
+		// Not contracted
+		if contractedTreatment.Herkomst == "" {
+			prestatieRecord.Bericht = fmt.Sprintf("Geen contractafspraak, maximale vergoeding %d procent\n", int64(policyContract.Factor*100.0))
+			covered = int64((float32(declaratie.Prestatierecords[0].TariefPrestatie) / 100.0) * policyContract.Factor * 100.0)
+		} else if contractedTreatment.Herkomst == "Contractafspraak" {
+			if covered == 0 {
+				prestatieRecord.Bericht = fmt.Sprintf("Deze behandeling bij deze zorgverlener wordt niet vergoed\n")
+				covered = 0.00
+			} else if declaratie.Prestatierecords[0].TariefPrestatie > covered {
+				prestatieRecord.Bericht = fmt.Sprintf("Volgens contractafspraak met zorgverlener is het bedrag %.2f\n", float32(covered)/100.0)
+			}
+		} else if contractedTreatment.Herkomst == "Polisvoorwaarden" {
+			if percentage == 0 {
+				prestatieRecord.Bericht = fmt.Sprintf("Volgens polisvoorwaarden is het bedrag %.2f\n", float32(covered)/100.0)
+			} else {
+				covered = int64((float32(covered) / 100.0) * percentage * 100.0)
+				prestatieRecord.Bericht = fmt.Sprintf("Volgens polisvoorwaarden %d perc. vergoedt: %.2f\n", int64(percentage*100.0), float32(covered)/100.0)
+			}
+		}
+		if covered > prestatieRecord.TariefPrestatie {
+			covered = prestatieRecord.TariefPrestatie
+		}
+		totalCovered = totalCovered + covered
+	}
+
+	remaining := currentStatus.Remaining
+
+	if policyContract.Unity == "behandelingen" && totalCovered > 0 {
+		remaining = remaining - 1
+	} else {
+		remaining = remaining - totalCovered
+	}
+
+	var msg string
+	if remaining < 0 {
+		msg = msg + "Uw heeft geen tegoed meer\n"
+		totalCovered = 0
 	}
 
 	var noclaim int64
-	var msg string
-	covered := contractedTreatment.TariefPrestatie
-	percentage := float32(contractedTreatment.Percentage) / 100.0
-	// Not contracted
-	if contractedTreatment.Herkomst == "" {
-		msg = fmt.Sprintf("Geen contractafspraak, maximale vergoeding %d procent\n", int64(policyContract.Factor*100.0))
-		covered = int64((float32(declaratie.Prestatierecords[0].BerekendBedrag) / 100.0) * policyContract.Factor * 100.0)
-	} else if contractedTreatment.Herkomst == "Contractafspraak" {
-		if covered == 0 {
-			msg = fmt.Sprintf("Deze behandeling bij deze zorgverlener wordt niet vergoed\n")
-		} else if declaratie.Prestatierecords[0].BerekendBedrag > covered {
-			msg = fmt.Sprintf("Volgens contractafspraak met zorgverlener is het bedrag %.2f\n", float32(covered)/100.0)
-			declaratie.Prestatierecords[0].BerekendBedrag = covered
-		}
-	} else if contractedTreatment.Herkomst == "Polisvoorwaarden" {
-		if percentage == 0 {
-			msg = fmt.Sprintf("Volgens polisvoorwaarden is het bedrag %.2f\n", float32(covered)/100.0)
-		} else {
-			covered = int64((float32(covered) / 100.0) * percentage * 100.0)
-			msg = fmt.Sprintf("Volgens polisvoorwaarden %d perc. vergoedt: %.2f\n", int64(percentage*100.0), float32(covered)/100.0)
-		}
-	}
-	if covered > declaratie.Prestatierecords[0].BerekendBedrag {
-		covered = declaratie.Prestatierecords[0].BerekendBedrag
-	}
-	remaining := currentStatus.Remaining
-
-	if policyContract.Unity == "behandelingen" && covered > 0 {
-		remaining = remaining - 1
-	} else {
-		remaining = remaining - covered
-	}
-
-	if remaining < 0 {
-		msg = msg + "Uw heeft geen tegoed meer\n"
-		covered = 0
-	}
-
-	if declaratie.Prestatierecords[0].BerekendBedrag > covered {
+	if totalClaimed > totalCovered {
 		msg = msg + "Niet volledig vergoed, u moet zelf bijbetalen\n"
-		noclaim = declaratie.Prestatierecords[0].BerekendBedrag - covered
+		noclaim = totalClaimed - totalCovered
 	}
 
 	msg = msg + policyContract.UzoviCode
-	return policyContract_createResponse("OK", remaining, covered, policyContract.Unity, noclaim, msg, declaratie.Voorlooprecord.AGBPraktijk)
+	return policyContract_createResponse("OK", remaining, totalCovered, policyContract.Unity, noclaim, msg, declaratie.Voorlooprecord.AGBPraktijk)
 }
 
 func policyContract_createResponse(result string, restant int64, vergoed int64, unity string, noclaim int64, bericht string, agbcode string) pb.Response {

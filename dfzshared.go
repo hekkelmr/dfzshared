@@ -31,6 +31,7 @@ type EIPrestatieRecord struct {
 	TariefPrestatie    int64     `json:"TariefPrestatie"`
 	BerekendBedrag     int64     `json:"BerekendBedrag"`
 	DatumPrestatie     time.Time `json:"DatumPrestatie"`
+	Bericht            string    `json:"Bericht"`
 }
 
 // Declaratie ... Combined healtclaim structure
