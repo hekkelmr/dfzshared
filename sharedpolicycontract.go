@@ -120,6 +120,7 @@ func PolicyContract_validateClaim(stub shim.ChaincodeStubInterface, policyContra
 
 	var totalCovered int64
 	var totalClaimed int64
+	var prestaties []EIPrestatieRecord
 	// Check suppier agreements ...
 	for _, prestatieRecord := range declaratie.Prestatierecords {
 		totalClaimed = totalClaimed + prestatieRecord.TariefPrestatie
@@ -157,6 +158,7 @@ func PolicyContract_validateClaim(stub shim.ChaincodeStubInterface, policyContra
 			covered = prestatieRecord.TariefPrestatie
 		}
 		totalCovered = totalCovered + covered
+		prestaties = append(prestaties, prestatieRecord)
 	}
 
 	remaining := currentStatus.Remaining
@@ -180,7 +182,7 @@ func PolicyContract_validateClaim(stub shim.ChaincodeStubInterface, policyContra
 	}
 
 	msg = msg + policyContract.UzoviCode
-	return policyContract_createResponse("OK", remaining, totalCovered, policyContract.Unity, noclaim, msg, declaratie.Voorlooprecord.AGBPraktijk, declaratie.Prestatierecords)
+	return policyContract_createResponse("OK", remaining, totalCovered, policyContract.Unity, noclaim, msg, declaratie.Voorlooprecord.AGBPraktijk, prestaties)
 }
 
 func policyContract_createResponse(result string, restant int64, vergoed int64, unity string, noclaim int64, bericht string, agbcode string, prestatierecords []EIPrestatieRecord) pb.Response {
