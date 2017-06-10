@@ -76,7 +76,7 @@ func PolicyContract_validateClaim(stub shim.ChaincodeStubInterface, policyContra
 	err := json.Unmarshal(bytes, &declaratie)
 	if err != nil {
 		fmt.Println(err.Error())
-		return policyContract_createResponse("FOUT", 0, 0, "", 0, err.Error(), "")
+		return policyContract_createResponse("FOUT", 0, 0, "", 0, err.Error(), "", declaratie.Prestatierecords)
 	}
 
 	// Does the person exists? (can this message be tamperd with???)
@@ -84,7 +84,7 @@ func PolicyContract_validateClaim(stub shim.ChaincodeStubInterface, policyContra
 	patient, err := GetPerson(stub, declaratie.Verzekerderecord.Bsncode)
 	if err != nil {
 		fmt.Println("Error checking BSN")
-		return policyContract_createResponse("FOUT", 0, 0, "", 0, err.Error(), "")
+		return policyContract_createResponse("FOUT", 0, 0, "", 0, err.Error(), "", declaratie.Prestatierecords)
 	}
 
 	// Is there stil funding for this patient?
@@ -107,7 +107,7 @@ func PolicyContract_validateClaim(stub shim.ChaincodeStubInterface, policyContra
 	currentStatus, err := policyContract_getBsnState(stub, policyContract, patient.Bsncode, year)
 	if err != nil {
 		fmt.Println("Error checking Credits")
-		return policyContract_createResponse("FOUT", 0, 0, "", 0, err.Error(), "")
+		return policyContract_createResponse("FOUT", 0, 0, "", 0, err.Error(), "", declaratie.Prestatierecords)
 	}
 
 	// Check AGB
@@ -115,7 +115,7 @@ func PolicyContract_validateClaim(stub shim.ChaincodeStubInterface, policyContra
 	agbcode := declaratie.Voorlooprecord.AGBPraktijk
 	_, err = GetCaregiver(stub, agbcode)
 	if err != nil {
-		return policyContract_createResponse("FOUT", 0, 0, "", 0, err.Error(), "")
+		return policyContract_createResponse("FOUT", 0, 0, "", 0, err.Error(), "", declaratie.Prestatierecords)
 	}
 
 	var totalCovered int64
@@ -180,11 +180,11 @@ func PolicyContract_validateClaim(stub shim.ChaincodeStubInterface, policyContra
 	}
 
 	msg = msg + policyContract.UzoviCode
-	return policyContract_createResponse("OK", remaining, totalCovered, policyContract.Unity, noclaim, msg, declaratie.Voorlooprecord.AGBPraktijk)
+	return policyContract_createResponse("OK", remaining, totalCovered, policyContract.Unity, noclaim, msg, declaratie.Voorlooprecord.AGBPraktijk, declaratie.Prestatierecords)
 }
 
-func policyContract_createResponse(result string, restant int64, vergoed int64, unity string, noclaim int64, bericht string, agbcode string) pb.Response {
-	antwoord := Retourbericht{agbcode, result, restant, vergoed, unity, noclaim, bericht}
+func policyContract_createResponse(result string, restant int64, vergoed int64, unity string, noclaim int64, bericht string, agbcode string, prestatierecords []EIPrestatieRecord) pb.Response {
+	antwoord := Retourbericht{agbcode, result, restant, vergoed, unity, noclaim, bericht, prestatierecords}
 	bytes, _ := json.Marshal(antwoord)
 	return shim.Success(bytes)
 }
@@ -201,7 +201,7 @@ func PolicyContract_doClaim(stub shim.ChaincodeStubInterface, policyContract Pol
 	err := json.Unmarshal(bytes, &declaratie)
 	if err != nil {
 		fmt.Println(err.Error())
-		return policyContract_createResponse("FOUT", 0, 0, "", 0, err.Error(), "")
+		return policyContract_createResponse("FOUT", 0, 0, "", 0, err.Error(), "", declaratie.Prestatierecords)
 	}
 
 	response := PolicyContract_validateClaim(stub, policyContract, args)

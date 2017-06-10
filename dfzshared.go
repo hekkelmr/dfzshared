@@ -138,13 +138,14 @@ type AssignedPolicies struct {
 
 // Retourbericht ... The outcome message for a healthclaim
 type Retourbericht struct {
-	AgbCode        string `json:"AgbCode"`
-	Retourcode     string `json:"Retourcode"`
-	Restant        int64  `json:"Restant"`
-	Vergoed        int64  `json:"Vergoed"`
-	RestantEenheid string `json:"RestantEenheid"`
-	Bijbetalen     int64  `json:"Bijbetalen"`
-	Bericht        string `json:"Bericht"`
+	AgbCode          string              `json:"AgbCode"`
+	Retourcode       string              `json:"Retourcode"`
+	Restant          int64               `json:"Restant"`
+	Vergoed          int64               `json:"Vergoed"`
+	RestantEenheid   string              `json:"RestantEenheid"`
+	Bijbetalen       int64               `json:"Bijbetalen"`
+	Bericht          string              `json:"Bericht"`
+	Prestatierecords []EIPrestatieRecord `json:"Prestatierecords"`
 }
 
 type HealthCareContractRouter struct {
