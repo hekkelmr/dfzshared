@@ -158,6 +158,7 @@ func PolicyContract_validateClaim(stub shim.ChaincodeStubInterface, policyContra
 		if covered > prestatieRecord.TariefPrestatie {
 			covered = prestatieRecord.TariefPrestatie
 		}
+		prestatieRecord.BerekendBedrag = covered
 		totalCovered = totalCovered + covered
 		prestatieResultaat := PrestatieResultaat{prestatieRecord, contractedTreatment.Omschrijving, bericht}
 		prestaties = append(prestaties, prestatieResultaat)
