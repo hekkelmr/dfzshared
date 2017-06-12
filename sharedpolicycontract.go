@@ -76,7 +76,7 @@ func PolicyContract_validateClaim(stub shim.ChaincodeStubInterface, policyContra
 	err := json.Unmarshal(bytes, &declaratie)
 	if err != nil {
 		fmt.Println(err.Error())
-		return policyContract_createResponse("FOUT", 0, 0, "", 0, err.Error(), "", declaratie.Prestatierecords)
+		return policyContract_createResponse("FOUT", 0, 0, "", 0, err.Error(), "", nil)
 	}
 
 	// Does the person exists? (can this message be tamperd with???)
@@ -84,7 +84,7 @@ func PolicyContract_validateClaim(stub shim.ChaincodeStubInterface, policyContra
 	patient, err := GetPerson(stub, declaratie.Verzekerderecord.Bsncode)
 	if err != nil {
 		fmt.Println("Error checking BSN")
-		return policyContract_createResponse("FOUT", 0, 0, "", 0, err.Error(), "", declaratie.Prestatierecords)
+		return policyContract_createResponse("FOUT", 0, 0, "", 0, err.Error(), "", nil)
 	}
 
 	// Is there stil funding for this patient?
@@ -107,7 +107,7 @@ func PolicyContract_validateClaim(stub shim.ChaincodeStubInterface, policyContra
 	currentStatus, err := policyContract_getBsnState(stub, policyContract, patient.Bsncode, year)
 	if err != nil {
 		fmt.Println("Error checking Credits")
-		return policyContract_createResponse("FOUT", 0, 0, "", 0, err.Error(), "", declaratie.Prestatierecords)
+		return policyContract_createResponse("FOUT", 0, 0, "", 0, err.Error(), "", nil)
 	}
 
 	// Check AGB
@@ -115,14 +115,15 @@ func PolicyContract_validateClaim(stub shim.ChaincodeStubInterface, policyContra
 	agbcode := declaratie.Voorlooprecord.AGBPraktijk
 	_, err = GetCaregiver(stub, agbcode)
 	if err != nil {
-		return policyContract_createResponse("FOUT", 0, 0, "", 0, err.Error(), "", declaratie.Prestatierecords)
+		return policyContract_createResponse("FOUT", 0, 0, "", 0, err.Error(), "", nil)
 	}
 
 	var totalCovered int64
 	var totalClaimed int64
-	var prestaties []EIPrestatieRecord
+	var prestaties []PrestatieResultaat
 	// Check suppier agreements ...
 	for _, prestatieRecord := range declaratie.Prestatierecords {
+		bericht := ""
 		totalClaimed = totalClaimed + prestatieRecord.TariefPrestatie
 		prslijst := prestatieRecord.Prestatiecodelijst
 		prscode := prestatieRecord.Prestatiecode
@@ -137,28 +138,29 @@ func PolicyContract_validateClaim(stub shim.ChaincodeStubInterface, policyContra
 		percentage := float32(contractedTreatment.Percentage) / 100.0
 		// Not contracted
 		if contractedTreatment.Herkomst == "" {
-			prestatieRecord.Bericht = fmt.Sprintf("Geen contractafspraak, maximale vergoeding %d procent\n", int64(policyContract.Factor*100.0))
+			bericht = fmt.Sprintf("Geen contractafspraak, maximale vergoeding %d procent\n", int64(policyContract.Factor*100.0))
 			covered = int64((float32(declaratie.Prestatierecords[0].TariefPrestatie) / 100.0) * policyContract.Factor * 100.0)
 		} else if contractedTreatment.Herkomst == "Contractafspraak" {
 			if covered == 0 {
-				prestatieRecord.Bericht = fmt.Sprintf("Deze behandeling bij deze zorgverlener wordt niet vergoed\n")
+				bericht = fmt.Sprintf("Deze behandeling bij deze zorgverlener wordt niet vergoed\n")
 				covered = 0.00
 			} else if declaratie.Prestatierecords[0].TariefPrestatie > covered {
-				prestatieRecord.Bericht = fmt.Sprintf("Volgens contractafspraak met zorgverlener is het bedrag %.2f\n", float32(covered)/100.0)
+				bericht = fmt.Sprintf("Volgens contractafspraak met zorgverlener is het bedrag %.2f\n", float32(covered)/100.0)
 			}
 		} else if contractedTreatment.Herkomst == "Polisvoorwaarden" {
 			if percentage == 0 {
-				prestatieRecord.Bericht = fmt.Sprintf("Volgens polisvoorwaarden is het bedrag %.2f\n", float32(covered)/100.0)
+				bericht = fmt.Sprintf("Volgens polisvoorwaarden is het bedrag %.2f\n", float32(covered)/100.0)
 			} else {
 				covered = int64((float32(covered) / 100.0) * percentage * 100.0)
-				prestatieRecord.Bericht = fmt.Sprintf("Volgens polisvoorwaarden %d perc. vergoedt: %.2f\n", int64(percentage*100.0), float32(covered)/100.0)
+				bericht = fmt.Sprintf("Volgens polisvoorwaarden %d perc. vergoedt: %.2f\n", int64(percentage*100.0), float32(covered)/100.0)
 			}
 		}
 		if covered > prestatieRecord.TariefPrestatie {
 			covered = prestatieRecord.TariefPrestatie
 		}
 		totalCovered = totalCovered + covered
-		prestaties = append(prestaties, prestatieRecord)
+		prestatieResultaat := PrestatieResultaat{prestatieRecord, contractedTreatment.Omschrijving, bericht}
+		prestaties = append(prestaties, prestatieResultaat)
 	}
 
 	remaining := currentStatus.Remaining
@@ -185,7 +187,7 @@ func PolicyContract_validateClaim(stub shim.ChaincodeStubInterface, policyContra
 	return policyContract_createResponse("OK", remaining, totalCovered, policyContract.Unity, noclaim, msg, declaratie.Voorlooprecord.AGBPraktijk, prestaties)
 }
 
-func policyContract_createResponse(result string, restant int64, vergoed int64, unity string, noclaim int64, bericht string, agbcode string, prestatierecords []EIPrestatieRecord) pb.Response {
+func policyContract_createResponse(result string, restant int64, vergoed int64, unity string, noclaim int64, bericht string, agbcode string, prestatierecords []PrestatieResultaat) pb.Response {
 	antwoord := Retourbericht{agbcode, result, restant, vergoed, unity, noclaim, bericht, prestatierecords}
 	bytes, _ := json.Marshal(antwoord)
 	return shim.Success(bytes)

@@ -34,6 +34,12 @@ type EIPrestatieRecord struct {
 	Bericht            string    `json:"Bericht"`
 }
 
+type PrestatieResultaat struct {
+	PrestatieRecord EIPrestatieRecord `json:"PrestatieRecord"`
+	Omschrijving    string            `json:"Omschrijving"`
+	Bericht         string            `json:"Bericht"`
+}
+
 // Declaratie ... Combined healtclaim structure
 type Declaratie struct {
 	Bsncode          string              `json:"Bsncode"`
@@ -138,14 +144,14 @@ type AssignedPolicies struct {
 
 // Retourbericht ... The outcome message for a healthclaim
 type Retourbericht struct {
-	AgbCode          string              `json:"AgbCode"`
-	Retourcode       string              `json:"Retourcode"`
-	Restant          int64               `json:"Restant"`
-	Vergoed          int64               `json:"Vergoed"`
-	RestantEenheid   string              `json:"RestantEenheid"`
-	Bijbetalen       int64               `json:"Bijbetalen"`
-	Bericht          string              `json:"Bericht"`
-	Prestatierecords []EIPrestatieRecord `json:"Prestatierecords"`
+	AgbCode          string               `json:"AgbCode"`
+	Retourcode       string               `json:"Retourcode"`
+	Restant          int64                `json:"Restant"`
+	Vergoed          int64                `json:"Vergoed"`
+	RestantEenheid   string               `json:"RestantEenheid"`
+	Bijbetalen       int64                `json:"Bijbetalen"`
+	Bericht          string               `json:"Bericht"`
+	Prestatierecords []PrestatieResultaat `json:"Prestatierecords"`
 }
 
 type HealthCareContractRouter struct {
