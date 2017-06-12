@@ -205,7 +205,7 @@ func PolicyContract_doClaim(stub shim.ChaincodeStubInterface, policyContract Pol
 	err := json.Unmarshal(bytes, &declaratie)
 	if err != nil {
 		fmt.Println(err.Error())
-		return policyContract_createResponse("FOUT", 0, 0, "", 0, err.Error(), "", declaratie.Prestatierecords)
+		return policyContract_createResponse("FOUT", 0, 0, "", 0, err.Error(), "", nil)
 	}
 
 	response := PolicyContract_validateClaim(stub, policyContract, args)
