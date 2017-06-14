@@ -154,7 +154,6 @@ func PolicyContract_validateClaim(stub shim.ChaincodeStubInterface, policyContra
 	// Check suppier agreements ...
 	for _, prestatieRecord := range declaratie.Prestatierecords {
 		bericht := ""
-		totalClaimed = totalClaimed + prestatieRecord.TariefPrestatie
 		prslijst := prestatieRecord.Prestatiecodelijst
 		prscode := prestatieRecord.Prestatiecode
 		datum := prestatieRecord.DatumPrestatie.String()[0:10]
@@ -174,7 +173,8 @@ func PolicyContract_validateClaim(stub shim.ChaincodeStubInterface, policyContra
 			if covered == 0 {
 				bericht = fmt.Sprintf("Deze behandeling bij deze zorgverlener wordt niet vergoed\n")
 				covered = 0.00
-			} else if declaratie.Prestatierecords[0].TariefPrestatie > covered {
+			} else if prestatieRecord.TariefPrestatie > covered {
+				prestatieRecord.TariefPrestatie = covered
 				bericht = fmt.Sprintf("Volgens contractafspraak met zorgverlener is het bedrag %.2f\n", float32(covered)/100.0)
 			}
 		} else if contractedTreatment.Herkomst == "Polisvoorwaarden" {
@@ -188,6 +188,7 @@ func PolicyContract_validateClaim(stub shim.ChaincodeStubInterface, policyContra
 		if covered > prestatieRecord.TariefPrestatie {
 			covered = prestatieRecord.TariefPrestatie
 		}
+		totalClaimed = totalClaimed + prestatieRecord.TariefPrestatie
 		prestatieRecord.BerekendBedrag = covered
 		totalCovered = totalCovered + covered
 		prestatieResultaat := PrestatieResultaat{prestatieRecord, contractedTreatment.Omschrijving, bericht}
