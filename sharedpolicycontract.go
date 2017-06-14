@@ -65,7 +65,7 @@ func PolicyContract_initValues(stub shim.ChaincodeStubInterface, policyContract 
 
 // Check if the claim is covered ...
 //========================================================================================================================
-func PolicyContract_validateClaim1(stub shim.ChaincodeStubInterface, policyContract PolicyContract, args []string) pb.Response {
+func PolicyContract_validateClaim(stub shim.ChaincodeStubInterface, policyContract PolicyContract, args []string) pb.Response {
 	var declaratie Declaratie
 
 	fmt.Println("########## Validate Claim ##########")
