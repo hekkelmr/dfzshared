@@ -79,6 +79,19 @@ func PolicyContract_validateClaim(stub shim.ChaincodeStubInterface, policyContra
 		return policyContract_createResponse("FOUT", 0, 0, "", 0, err.Error(), "", nil)
 	}
 
+	// is deze declaratie al gedaan?
+	fmt.Println("Checking Treatment")
+	vorigeDeclaratie, err := policyContract_getTreatmentState(stub, policyContract, declaratie.Voorlooprecord.ReferentieBehandeling)
+	if err != nil {
+		fmt.Println("Error checking treatment")
+		return policyContract_createResponse("FOUT", 0, 0, "", 0, err.Error(), "", nil)
+	}
+	if vorigeDeclaratie.Voorlooprecord.ReferentieBehandeling == declaratie.Voorlooprecord.ReferentieBehandeling {
+		fmt.Println("Behandeling al verwerkt")
+		return policyContract_createResponse("FOUT", 0, 0, "", 0, "Behandeling al verwerkt", "", nil)
+
+	}
+
 	// Does the person exists? (can this message be tamperd with???)
 	fmt.Println("Checking BSN")
 	patient, err := GetPerson(stub, declaratie.Verzekerderecord.Bsncode)
@@ -258,6 +271,11 @@ func PolicyContract_doClaim(stub shim.ChaincodeStubInterface, policyContract Pol
 		return shim.Error(err.Error())
 	}
 
+	err = policyContract_setTreatmentState(stub, policyContract, declaratie)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
 	caregiver, err := GetCaregiver(stub, antwoord.AgbCode)
 	if err != nil || caregiver.WalletID == "" {
 		msg := "Cannot retrieve caregiver Wallet"
@@ -366,6 +384,59 @@ func policyContract_setAgbBalanceState(stub shim.ChaincodeStubInterface, policyC
 	val := strconv.FormatInt(amount, 10)
 	fmt.Printf("Amount will be %s", val)
 	invokeArgs := util.ToChaincodeArgs("set", key, val)
+	response := stub.InvokeChaincode(myRepo, invokeArgs, "")
+	if response.Status != shim.OK {
+		fmt.Printf("Error saving via policycontactrepositor\n")
+		return errors.New("error saving via policycontactrepository")
+	}
+
+	return nil
+}
+
+// Get State of Treatment...
+//========================================================================================================================
+func policyContract_getTreatmentState(stub shim.ChaincodeStubInterface, policyContract PolicyContract, treatmentId string) (Declaratie, error) {
+
+	var declaratie Declaratie
+	key := "TREATMENT-" + treatmentId
+
+	myRepo, err := GetDeployedChaincode(stub, policyContract.PolicyContractRepository)
+	if err != nil {
+		fmt.Printf("Error getting policycontractrepository\n")
+	}
+
+	invokeArgs := util.ToChaincodeArgs("query", key)
+	response := stub.InvokeChaincode(myRepo, invokeArgs, "")
+	if response.Status != shim.OK {
+		fmt.Printf("Error saving via policycontactrepositor\n")
+		return declaratie, errors.New("error quering via policycontactrepository")
+	}
+
+	json.Unmarshal(response.Payload, &declaratie)
+
+	return declaratie, nil
+}
+
+// Set State Treatment ...
+//========================================================================================================
+func policyContract_setTreatmentState(stub shim.ChaincodeStubInterface, policyContract PolicyContract, declaratie Declaratie) error {
+
+	key := "TREATMENT-" + declaratie.Voorlooprecord.ReferentieBehandeling
+
+	myRepo, err := GetDeployedChaincode(stub, policyContract.PolicyContractRepository)
+	if err != nil {
+		fmt.Printf("Error getting policycontractrepository\n")
+		return errors.New("Error getting policycontractrepository")
+	}
+
+	val, err := json.Marshal(declaratie)
+	if err != nil {
+		msg := "Error marschalling declaratie"
+		fmt.Println(msg)
+		return errors.New(msg)
+	}
+
+	invokeArgs := util.ToChaincodeArgs("set", key, string(val))
 	response := stub.InvokeChaincode(myRepo, invokeArgs, "")
 	if response.Status != shim.OK {
 		fmt.Printf("Error saving via policycontactrepositor\n")
