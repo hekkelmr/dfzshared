@@ -54,7 +54,7 @@ func PolicyContract_initValues(stub shim.ChaincodeStubInterface, policyContract 
 		return shim.Error("BSN invalid")
 	}
 
-	err = policyContract_setBsnState(stub, policyContract, bsncode, year, policyContract.MaximumTreatmentsYear, declaratie)
+	err = PolicyContract_setBsnState(stub, policyContract, bsncode, year, policyContract.MaximumTreatmentsYear, declaratie)
 	if err != nil {
 
 		return shim.Error("error saving via policycontactrepository")
@@ -115,7 +115,24 @@ func PolicyContract_validateClaim(stub shim.ChaincodeStubInterface, policyContra
 	agbcode := declaratie.Voorlooprecord.AGBPraktijk
 	_, err = GetCaregiver(stub, agbcode)
 	if err != nil {
-		return policyContract_createResponse("FOUT", 0, 0, "", 0, err.Error(), "", nil)
+		return policyContract_createResponse("FOUT", 0, 0, "", 0, "AGBPraktijk niet bekend", "", nil)
+	}
+
+	// Check AGB
+	if declaratie.Voorlooprecord.AGBZorgverlener != "" {
+		fmt.Println("Checking Zorgverlener")
+		agbcode := declaratie.Voorlooprecord.AGBZorgverlener
+		_, err = GetZorgverlener(stub, agbcode)
+		if err != nil {
+			return policyContract_createResponse("FOUT", 0, 0, "", 0, "AGB behandelaar niet bekend", "", nil)
+		}
+		fmt.Println("Checking werkzaam")
+		agbcode = declaratie.Voorlooprecord.AGBPraktijk
+		agbcode2 := declaratie.Voorlooprecord.AGBZorgverlener
+		err = GetWerkzaam(stub, agbcode, agbcode2)
+		if err != nil {
+			return policyContract_createResponse("FOUT", 0, 0, "", 0, "Behandelaar niet werkzaam in praktijk", "", nil)
+		}
 	}
 
 	var totalCovered int64
@@ -216,7 +233,7 @@ func PolicyContract_doClaim(stub shim.ChaincodeStubInterface, policyContract Pol
 	}
 	year := strconv.Itoa(declaratie.Prestatierecords[0].DatumPrestatie.Year())
 
-	err = policyContract_setBsnState(stub, policyContract, declaratie.Verzekerderecord.Bsncode, year, antwoord.Restant, declaratie)
+	err = PolicyContract_setBsnState(stub, policyContract, declaratie.Verzekerderecord.Bsncode, year, antwoord.Restant, declaratie)
 	if err != nil {
 		return shim.Error(err.Error())
 	}
@@ -273,7 +290,7 @@ func PolicyContract_doClaim(stub shim.ChaincodeStubInterface, policyContract Pol
 
 // Set State BSN ...
 //========================================================================================================
-func policyContract_setBsnState(stub shim.ChaincodeStubInterface, policyContract PolicyContract, bsncode string, year string, treatments int64, declaratie Declaratie) error {
+func PolicyContract_setBsnState(stub shim.ChaincodeStubInterface, policyContract PolicyContract, bsncode string, year string, treatments int64, declaratie Declaratie) error {
 
 	key := policyContract.ContractCode + ":" + bsncode + ":" + year
 

@@ -64,6 +64,61 @@ func GetCaregiver(stub shim.ChaincodeStubInterface, agbcode string) (CareGiver, 
 	return caregiver, nil
 }
 
+// GetZorgverlener ... Check Caregiver ...
+//========================================================================================================================
+func GetZorgverlener(stub shim.ChaincodeStubInterface, agbcode string) (CareGiver, error) {
+	var caregiver CareGiver
+	fmt.Printf("Searching %s\n", agbcode)
+
+	caregiverRepo, err := GetDeployedChaincode(stub, "caregiver")
+	if err != nil {
+		return caregiver, err
+	}
+
+	function := "queryZorgverlener"
+	invokeArgs := util.ToChaincodeArgs(function, agbcode)
+	response := stub.InvokeChaincode(caregiverRepo, invokeArgs, "")
+
+	if response.Status != shim.OK {
+		msg := "Failed to get state for caregiver chain"
+		fmt.Println(msg)
+		return caregiver, errors.New(msg)
+	}
+
+	err = json.Unmarshal(response.Payload, &caregiver)
+	if err != nil {
+		return caregiver, err
+	}
+
+	return caregiver, nil
+}
+
+// GetZorgverlener ... Check Caregiver ...
+//========================================================================================================================
+func GetWerkzaam(stub shim.ChaincodeStubInterface, agbcode string, agbcode2 string) error {
+
+	caregiverRepo, err := GetDeployedChaincode(stub, "caregiver")
+	if err != nil {
+		return err
+	}
+
+	function := "queryWerkzaam"
+	invokeArgs := util.ToChaincodeArgs(function, agbcode, agbcode2)
+	response := stub.InvokeChaincode(caregiverRepo, invokeArgs, "")
+
+	if response.Status != shim.OK {
+		msg := "Failed to get state for caregiver chain"
+		fmt.Println(msg)
+		return errors.New(msg)
+	}
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // GetPerson ...
 //========================================================================================================================
 func GetPerson(stub shim.ChaincodeStubInterface, bsncode string) (Person, error) {
