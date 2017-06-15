@@ -153,12 +153,28 @@ func PolicyContract_validateClaim(stub shim.ChaincodeStubInterface, policyContra
 		locatieOk := false
 		if len(caregiver.GeoLocaties) > 0 {
 			if declaratie.GeoLocatie.Lat != "" && declaratie.GeoLocatie.Lon != "" {
-				latLoc := strconv.ParseFloat(declaratie.GeoLocatie.Lat, 64)
-				lonLoc := strconv.ParseFloat(declaratie.GeoLocatie.Lon, 64)
+				latLoc, err := strconv.ParseFloat(declaratie.GeoLocatie.Lat, 64)
+				if err != nil {
+					fmt.Println("Fout bij omzetten latLoc")
+				}
+				lonLoc, err := strconv.ParseFloat(declaratie.GeoLocatie.Lon, 64)
+				if err != nil {
+					fmt.Println("Fout bij omzetten lonLoc")
+				}
 				for _, geoLocatie := range caregiver.GeoLocaties {
-					latVest := strconv.ParseFloat(geoLocatie.Lat, 64)
-					lonVest := strconv.ParseFloat(geoLocatie.Lon, 64)
-
+					latVest, err := strconv.ParseFloat(geoLocatie.Lat, 64)
+					if err != nil {
+						fmt.Println("Fout bij omzetten llatVest")
+					}
+					lonVest, err := strconv.ParseFloat(geoLocatie.Lon, 64)
+					if err != nil {
+						fmt.Println("Fout bij omzetten lonVest")
+					}
+					dist := Distance(latLoc, lonLoc, latVest, lonVest)
+					if dist <= 500 {
+						locatieOk = true
+						break
+					}
 				}
 			}
 		}
