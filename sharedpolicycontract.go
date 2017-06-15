@@ -150,15 +150,28 @@ func PolicyContract_validateClaim(stub shim.ChaincodeStubInterface, policyContra
 
 	// Check locatie
 	if policyContract.GebruikLocatieCheck {
+		locatieOk := false
 		if len(caregiver.GeoLocaties) > 0 {
+			if declaratie.GeoLocatie.Lat != "" && declaratie.GeoLocatie.Lon != "" {
+				latLoc := strconv.ParseFloat(declaratie.GeoLocatie.Lat, 64)
+				lonLoc := strconv.ParseFloat(declaratie.GeoLocatie.Lon, 64)
+				for _, geoLocatie := range caregiver.GeoLocaties {
+					latVest := strconv.ParseFloat(geoLocatie.Lat, 64)
+					lonVest := strconv.ParseFloat(geoLocatie.Lon, 64)
 
+				}
+			}
+		}
+
+		if !locatieOk {
+			return policyContract_createResponse("FOUT", 0, 0, "", 0, "Niet aanwezig op geschikte locatie", "", nil)
 		}
 	}
 
 	var totalCovered int64
 	var totalClaimed int64
 	var prestaties []PrestatieResultaat
-	// Check suppier agreements ...
+	// Check supplier agreements ...
 	for _, prestatieRecord := range declaratie.Prestatierecords {
 		bericht := ""
 		prslijst := prestatieRecord.Prestatiecodelijst
