@@ -126,7 +126,7 @@ func PolicyContract_validateClaim(stub shim.ChaincodeStubInterface, policyContra
 	// Check AGB
 	fmt.Println("Checking AGB")
 	agbcode := declaratie.Voorlooprecord.AGBPraktijk
-	_, err = GetCaregiver(stub, agbcode)
+	caregiver, err := GetCaregiver(stub, agbcode)
 	if err != nil {
 		return policyContract_createResponse("FOUT", 0, 0, "", 0, "AGBPraktijk niet bekend", "", nil)
 	}
@@ -145,6 +145,13 @@ func PolicyContract_validateClaim(stub shim.ChaincodeStubInterface, policyContra
 		err = GetWerkzaam(stub, agbcode, agbcode2)
 		if err != nil {
 			return policyContract_createResponse("FOUT", 0, 0, "", 0, "Behandelaar niet werkzaam in praktijk", "", nil)
+		}
+	}
+
+	// Check locatie
+	if policyContract.GebruikLocatieCheck {
+		if len(caregiver.GeoLocaties) > 0 {
+
 		}
 	}
 
@@ -195,24 +202,28 @@ func PolicyContract_validateClaim(stub shim.ChaincodeStubInterface, policyContra
 		prestaties = append(prestaties, prestatieResultaat)
 	}
 
-	remaining := currentStatus.Remaining
-
-	if policyContract.Unity == "behandelingen" && totalCovered > 0 {
-		remaining = remaining - 1
-	} else {
-		remaining = remaining - totalCovered
-	}
-
 	var msg string
-	if remaining < 0 {
-		msg = msg + "Uw heeft geen tegoed meer\n"
-		totalCovered = 0
-	}
-
 	var noclaim int64
-	if totalClaimed > totalCovered {
-		msg = msg + "Niet volledig vergoed, u moet zelf bijbetalen\n"
-		noclaim = totalClaimed - totalCovered
+	var remaining int64
+	remaining = 0
+
+	if policyContract.MaximumTreatmentsYear > 0 {
+		remaining = currentStatus.Remaining
+		if policyContract.Unity == "behandelingen" && totalCovered > 0 {
+			remaining = remaining - 1
+		} else {
+			remaining = remaining - totalCovered
+		}
+
+		if remaining < 0 {
+			msg = msg + "Uw heeft geen tegoed meer\n"
+			totalCovered = 0
+		}
+
+		if totalClaimed > totalCovered {
+			msg = msg + "Niet volledig vergoed, u moet zelf bijbetalen\n"
+			noclaim = totalClaimed - totalCovered
+		}
 	}
 
 	msg = msg + policyContract.UzoviCode

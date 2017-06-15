@@ -47,6 +47,12 @@ type Declaratie struct {
 	Voorlooprecord   EIVoorloopRecord    `json:"Voorlooprecord"`
 	Verzekerderecord EIVerzekerdeRecord  `json:"Verzekerderecord"`
 	Prestatierecords []EIPrestatieRecord `json:"Prestatierecords"`
+	GeoLocatie       GeoLocatie          `json:"GeoLocatie"`
+}
+
+type GeoLocatie struct {
+	Lat string `json:"Lat"`
+	Lon string `json:"Lon"`
 }
 
 // ContractStatus ...
@@ -90,6 +96,7 @@ type PolicyContract struct {
 	Unity                    string
 	Factor                   float32
 	PolicyContractRepository string
+	GebruikLocatieCheck      bool
 }
 
 // Chain ...
@@ -110,12 +117,13 @@ type Person struct {
 }
 
 type CareGiver struct {
-	Agbcode  string `json:"Agbcode"`
-	Name     string `json:"Name"`
-	Type     string `json:"Type"`
-	Soort    string `json:"Soort"`
-	WalletID string `json:"WalletID"`
-	ID       string `json:"ID"`
+	Agbcode     string       `json:"Agbcode"`
+	Name        string       `json:"Name"`
+	Type        string       `json:"Type"`
+	Soort       string       `json:"Soort"`
+	WalletID    string       `json:"WalletID"`
+	ID          string       `json:"ID"`
+	GeoLocaties []GeoLocatie `json:"GeoLocaties"`
 }
 
 type InsuranceCompany struct {
