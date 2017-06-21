@@ -558,7 +558,7 @@ func polisafspraak_getContracted(stub shim.ChaincodeStubInterface, uzovicode str
 	var contractprestatie dfzproto.Contractprestatie
 
 	invokeArgs := util.ToChaincodeArgs("queryContractedTreatment", uzovicode, agbcode, date, prestielijst, prestatiecode)
-	response := stub.InvokeChaincode("zorgaanbiederszontractrouter", invokeArgs, "")
+	response := stub.InvokeChaincode("zorgaanbiederscontractrouter", invokeArgs, "")
 	if response.Status != shim.OK {
 		msg := "Error query on healthcare contract"
 		fmt.Println(msg + " " + response.Message)
