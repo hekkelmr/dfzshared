@@ -2,7 +2,7 @@
 Copyright Rob Hekkelman 2017 All Rights Reserved.
 */
 
-package dfzshared
+package dfzutils
 
 import (
 	"encoding/json"
@@ -11,101 +11,66 @@ import (
 	"math"
 	"strconv"
 
+	dfzp "github.com/hekkelmr/dfzshared/dfzprotos"
 	"github.com/hyperledger/fabric/common/util"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
 
-// GetDeployedChaincode ... Get a deployed chain
-//========================================================================================================
-func GetDeployedChaincode(stub shim.ChaincodeStubInterface, name string) (string, error) {
-	var chain Chain
-	f := "query"
-	invokeArgs := util.ToChaincodeArgs(f, name)
-	response := stub.InvokeChaincode("chains01", invokeArgs, "")
-	if response.Status != shim.OK {
-		errStr := fmt.Sprintf("Failed to invoke chain01.")
-		fmt.Printf(errStr)
-		return "", errors.New(errStr)
-	}
-	err := json.Unmarshal(response.Payload, &chain)
-	if err != nil {
-		errStr := fmt.Sprintf("Failed to determine chaincodeid.")
-		fmt.Printf(errStr)
-		return "", errors.New(errStr)
-	}
-	return chain.ChaincodeID, nil
-}
-
-// GetCaregiver ... Check Caregiver ...
+// GetZorgaanbieder ...
 //========================================================================================================================
-func GetCaregiver(stub shim.ChaincodeStubInterface, agbcode string) (CareGiver, error) {
-	var caregiver CareGiver
+func GetZorgaanbieder(stub shim.ChaincodeStubInterface, agbcode string) (dfzp.Zorgaanbieder, error) {
+	var zorgaanbieder dfzp.Zorgaanbieder
 	fmt.Printf("Searching %s\n", agbcode)
-
-	caregiverRepo, err := GetDeployedChaincode(stub, "caregiver")
-	if err != nil {
-		return caregiver, err
-	}
 
 	function := "query"
 	invokeArgs := util.ToChaincodeArgs(function, agbcode)
-	response := stub.InvokeChaincode(caregiverRepo, invokeArgs, "")
+	response := stub.InvokeChaincode("zorgaanbieder", invokeArgs, "")
 
 	if response.Status != shim.OK {
 		msg := "Failed to get state for caregiver chain"
 		fmt.Println(msg)
-		return caregiver, errors.New(msg)
+		return zorgaanbieder, errors.New(msg)
 	}
 
-	err = json.Unmarshal(response.Payload, &caregiver)
+	err := json.Unmarshal(response.Payload, &zorgaanbieder)
 	if err != nil {
-		return caregiver, err
+		return zorgaanbieder, err
 	}
 
-	return caregiver, nil
+	return zorgaanbieder, nil
 }
 
-// GetZorgverlener ... Check Caregiver ...
+// GetZorgverlener ...
 //========================================================================================================================
-func GetZorgverlener(stub shim.ChaincodeStubInterface, agbcode string) (CareGiver, error) {
-	var caregiver CareGiver
+func GetZorgverlener(stub shim.ChaincodeStubInterface, agbcode string) (dfzp.Zorgaanbieder, error) {
+	var zorgaanbieder dfzp.Zorgaanbieder
 	fmt.Printf("Searching %s\n", agbcode)
-
-	caregiverRepo, err := GetDeployedChaincode(stub, "caregiver")
-	if err != nil {
-		return caregiver, err
-	}
 
 	function := "queryZorgverlener"
 	invokeArgs := util.ToChaincodeArgs(function, agbcode)
-	response := stub.InvokeChaincode(caregiverRepo, invokeArgs, "")
+	response := stub.InvokeChaincode("zorgaanbieder", invokeArgs, "")
 
 	if response.Status != shim.OK {
 		msg := "Failed to get state for caregiver chain"
 		fmt.Println(msg)
-		return caregiver, errors.New(msg)
+		return zorgaanbieder, errors.New(msg)
 	}
 
-	err = json.Unmarshal(response.Payload, &caregiver)
+	err := json.Unmarshal(response.Payload, &zorgaanbieder)
 	if err != nil {
-		return caregiver, err
+		return zorgaanbieder, err
 	}
 
-	return caregiver, nil
+	return zorgaanbieder, nil
 }
 
-// GetZorgverlener ... Check Caregiver ...
+// CheckWerkzaam ... Check of agbcode2 werkzaam is bij agbcode1
 //========================================================================================================================
-func GetWerkzaam(stub shim.ChaincodeStubInterface, agbcode string, agbcode2 string) error {
-
-	caregiverRepo, err := GetDeployedChaincode(stub, "caregiver")
-	if err != nil {
-		return err
-	}
+func CheckWerkzaam(stub shim.ChaincodeStubInterface, agbcode string, agbcode2 string) error {
 
 	function := "queryWerkzaam"
 	invokeArgs := util.ToChaincodeArgs(function, agbcode, agbcode2)
-	response := stub.InvokeChaincode(caregiverRepo, invokeArgs, "")
+	response := stub.InvokeChaincode("zorgaanbieder", invokeArgs, "")
 
 	if response.Status != shim.OK {
 		msg := "Failed to get state for caregiver chain"
@@ -113,32 +78,24 @@ func GetWerkzaam(stub shim.ChaincodeStubInterface, agbcode string, agbcode2 stri
 		return errors.New(msg)
 	}
 
-	if err != nil {
-		return err
-	}
-
 	return nil
 }
 
-// GetPerson ...
+// GetPersoon ...
 //========================================================================================================================
-func GetPerson(stub shim.ChaincodeStubInterface, bsncode string) (Person, error) {
-	var patient Person
-	personRepo, err := GetDeployedChaincode(stub, "person")
-	if err != nil {
-		return patient, err
-	}
+func GetPersoon(stub shim.ChaincodeStubInterface, bsncode string) (dfzp.Persoon, error) {
+	var patient dfzp.Persoon
 
 	function := "query"
 	invokeArgs := util.ToChaincodeArgs(function, bsncode)
-	response := stub.InvokeChaincode(personRepo, invokeArgs, "")
+	response := stub.InvokeChaincode("persoon", invokeArgs, "")
 	if response.Status != shim.OK {
 		msg := "Failed to get state for patient chain"
 		fmt.Println(msg)
 		return patient, errors.New(msg)
 	}
 
-	err = json.Unmarshal(response.Payload, &patient)
+	err := json.Unmarshal(response.Payload, &patient)
 	if err != nil {
 		return patient, err
 	}
@@ -146,51 +103,43 @@ func GetPerson(stub shim.ChaincodeStubInterface, bsncode string) (Person, error)
 	return patient, nil
 }
 
-// GetInsuranceCompany ...
+// GetVerzekeraar ...
 //========================================================================================================================
-func GetInsuranceCompany(stub shim.ChaincodeStubInterface, uzovicode string) (InsuranceCompany, error) {
-	var company InsuranceCompany
-	companyRepo, err := GetDeployedChaincode(stub, "insurancecompany")
-	if err != nil {
-		return company, err
-	}
+func GetVerzekeraar(stub shim.ChaincodeStubInterface, uzovicode string) (dfzp.Verzekeraar, error) {
+	var verzekeraar dfzp.Verzekeraar
 
 	function := "query"
 	invokeArgs := util.ToChaincodeArgs(function, uzovicode)
-	response := stub.InvokeChaincode(companyRepo, invokeArgs, "")
+	response := stub.InvokeChaincode("verzekeraar", invokeArgs, "")
 	if response.Status != shim.OK {
 		msg := "Failed to get state for insurancecompany chain"
 		fmt.Println(msg)
-		return company, errors.New(msg)
+		return verzekeraar, errors.New(msg)
 	}
 
-	err = json.Unmarshal(response.Payload, &company)
+	err := json.Unmarshal(response.Payload, &verzekeraar)
 	if err != nil {
-		return company, err
+		return verzekeraar, err
 	}
 
-	return company, nil
+	return verzekeraar, nil
 }
 
 // GetWallet ...
 //========================================================================================================================
-func GetWallet(stub shim.ChaincodeStubInterface, id string) (CurecoinWallet, error) {
-	var wallet CurecoinWallet
-	repo, err := GetDeployedChaincode(stub, "curecoinwallet")
-	if err != nil {
-		return wallet, err
-	}
+func GetWallet(stub shim.ChaincodeStubInterface, id string) (dfzp.CurecoinWallet, error) {
+	var wallet dfzp.CurecoinWallet
 
 	function := "query"
 	invokeArgs := util.ToChaincodeArgs(function, id)
-	response := stub.InvokeChaincode(repo, invokeArgs, "")
+	response := stub.InvokeChaincode("curecoinwallet", invokeArgs, "")
 	if response.Status != shim.OK {
 		msg := "Failed to get state for curecoinwallet chain"
 		fmt.Println(msg)
 		return wallet, errors.New(msg)
 	}
 
-	err = json.Unmarshal(response.Payload, &wallet)
+	err := json.Unmarshal(response.Payload, &wallet)
 	if err != nil {
 		return wallet, err
 	}
@@ -198,25 +147,21 @@ func GetWallet(stub shim.ChaincodeStubInterface, id string) (CurecoinWallet, err
 	return wallet, nil
 }
 
-// NewWallet ...
+// NewWalletID ...
 //========================================================================================================================
 func NewWalletID(stub shim.ChaincodeStubInterface) (string, error) {
-	var wallet CurecoinWallet
-	repo, err := GetDeployedChaincode(stub, "curecoinwallet")
-	if err != nil {
-		return "", err
-	}
+	var wallet dfzp.CurecoinWallet
 
 	function := "create"
 	invokeArgs := util.ToChaincodeArgs(function, "")
-	response := stub.InvokeChaincode(repo, invokeArgs, "")
+	response := stub.InvokeChaincode("curecoinwallet", invokeArgs, "")
 	if response.Status != shim.OK {
 		msg := "Failed to get state for curecoinwallet chain"
 		fmt.Println(msg)
 		return "", errors.New(msg)
 	}
 
-	err = json.Unmarshal(response.Payload, &wallet)
+	err := json.Unmarshal(response.Payload, &wallet)
 	if err != nil {
 		return "", err
 	}
@@ -224,41 +169,29 @@ func NewWalletID(stub shim.ChaincodeStubInterface) (string, error) {
 	return wallet.ID, nil
 }
 
-// MakePayment ...
-func MakePayment(stub shim.ChaincodeStubInterface, from string, to string, value int64, data string) error {
-	walletChain, err := GetDeployedChaincode(stub, "curecoinwallet")
-	if err != nil {
-		msg := "Curecoinwallet contract does not exist"
-		fmt.Println(msg)
-		return errors.New(msg)
-	}
+// DoeBetaling ...
+func DoeBetaling(stub shim.ChaincodeStubInterface, from string, to string, value int64, data string) error {
 
 	function := "makepayment"
 	amount := strconv.FormatInt(value, 10)
 	fmt.Printf("From %s to %s amount %s\n", from, to, amount)
 	invokeArgs := util.ToChaincodeArgs(function, from, to, amount, data)
-	respWallet := stub.InvokeChaincode(walletChain, invokeArgs, "")
+	respWallet := stub.InvokeChaincode("curecoinwallet", invokeArgs, "")
 	if respWallet.Status != shim.OK {
 		return errors.New(respWallet.Message)
 	}
 	return nil
 }
 
-// MakeCombinedPayment ...
-func MakeCombinedPayment(stub shim.ChaincodeStubInterface, from1 string, to string, valueFrom1 int64, from2 string, valueFrom2 int64, data string) error {
-	walletChain, err := GetDeployedChaincode(stub, "curecoinwallet")
-	if err != nil {
-		msg := "Curecoinwallet contract does not exist"
-		fmt.Println(msg)
-		return errors.New(msg)
-	}
+// DoeGecombineerdeBetaling ...
+func DoeGecombneerdeBetaling(stub shim.ChaincodeStubInterface, from1 string, to string, valueFrom1 int64, from2 string, valueFrom2 int64, data string) error {
 
 	function := "makecombinedpayment"
 	amount1 := strconv.FormatInt(valueFrom1, 10)
 	amount2 := strconv.FormatInt(valueFrom2, 10)
 
 	invokeArgs := util.ToChaincodeArgs(function, from1, to, amount1, from2, amount2, data)
-	respWallet := stub.InvokeChaincode(walletChain, invokeArgs, "")
+	respWallet := stub.InvokeChaincode("curecoinwallet", invokeArgs, "")
 	if respWallet.Status != shim.OK {
 		return errors.New(respWallet.Message)
 	}
