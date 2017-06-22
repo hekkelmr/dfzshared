@@ -240,3 +240,12 @@ func Distance(lat1, lon1, lat2, lon2 float64) float64 {
 
 	return 2 * r * math.Asin(math.Sqrt(h))
 }
+
+// ToChaincodeArgs converts string args to []byte args
+func ToChaincodeArgs(args ...string) [][]byte {
+	bargs := make([][]byte, len(args))
+	for i, arg := range args {
+		bargs[i] = []byte(arg)
+	}
+	return bargs
+}
