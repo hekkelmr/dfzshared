@@ -554,10 +554,10 @@ func Polisafspraak_getBalanceState(stub shim.ChaincodeStubInterface, polisafspra
 
 // Check Coverage...
 //========================================================================================================================
-func polisafspraak_getContracted(stub shim.ChaincodeStubInterface, uzovicode string, agbcode string, prestielijst string, prestatiecode string, date string) (dfzproto.Contractprestatie, error) {
+func polisafspraak_getContracted(stub shim.ChaincodeStubInterface, uzovicode string, agbcode string, prestatielijst string, prestatiecode string, date string) (dfzproto.Contractprestatie, error) {
 	var contractprestatie dfzproto.Contractprestatie
 
-	invokeArgs := util.ToChaincodeArgs("queryContractedTreatment", uzovicode, agbcode, date, prestielijst, prestatiecode)
+	invokeArgs := util.ToChaincodeArgs("queryContractedTreatment", uzovicode, agbcode, date, prestatielijst, prestatiecode)
 	response := stub.InvokeChaincode("zorgaanbiederscontractrouter", invokeArgs, "")
 	if response.Status != shim.OK {
 		msg := "Error query on healthcare contract"
