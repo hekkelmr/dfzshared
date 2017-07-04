@@ -102,8 +102,8 @@ type Polisafspraak struct {
 type Persoon struct {
 	Bsncode          string    `json:"Bsncode"`
 	Naam             string    `json:"Naam"`
-	Geboortedatum    time.Time `json:"Dob"`
-	Overlijdensdatum time.Time `json:"Dod"`
+	Geboortedatum    time.Time `json:"Geboortedatum"`
+	Overlijdensdatum time.Time `json:"Overlijdensdatum"`
 	WalletID         string    `json:"WalletID"`
 	ID               string    `json:"ID"`
 }
