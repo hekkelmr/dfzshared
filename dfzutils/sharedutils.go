@@ -184,7 +184,7 @@ func DoeBetaling(stub shim.ChaincodeStubInterface, from string, to string, value
 }
 
 // DoeGecombineerdeBetaling ...
-func DoeGecombneerdeBetaling(stub shim.ChaincodeStubInterface, from1 string, to string, valueFrom1 int64, from2 string, valueFrom2 int64, data string) error {
+func DoeGecombineerdeBetaling(stub shim.ChaincodeStubInterface, from1 string, to string, valueFrom1 int64, from2 string, valueFrom2 int64, data string) error {
 
 	function := "makecombinedpayment"
 	amount1 := strconv.FormatInt(valueFrom1, 10)
