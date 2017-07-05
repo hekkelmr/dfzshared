@@ -2,7 +2,7 @@
 Copyright Rob Hekkelman 2017 All Rights Reserved.
 */
 
-package sharedpolis
+package dfzpolis
 
 import (
 	"encoding/json"
@@ -19,12 +19,12 @@ import (
 
 // Query ...
 //========================================================================================================================
-func Polisafspraak_query(stub shim.ChaincodeStubInterface, polisafspraak dfzproto.Polisafspraak, args []string) pb.Response {
+func Query(stub shim.ChaincodeStubInterface, polisafspraak dfzproto.Polisafspraak, args []string) pb.Response {
 	fmt.Println("########## Query ##########")
 	bsncode := args[0]
 	jaar := args[1]
 
-	currentStatus, err := polisafspraak_getBsnState(stub, polisafspraak, bsncode, jaar)
+	currentStatus, err := getBsnState(stub, polisafspraak, bsncode, jaar)
 	if err != nil {
 		return shim.Error(err.Error())
 	}
@@ -35,17 +35,17 @@ func Polisafspraak_query(stub shim.ChaincodeStubInterface, polisafspraak dfzprot
 	return shim.Success(bytes)
 }
 
-// Query ...
+// GetUZOVI ...
 //========================================================================================================================
-func Polisafspraak_getUZOVI(polisafspraak dfzproto.Polisafspraak) pb.Response {
+func GetUZOVI(polisafspraak dfzproto.Polisafspraak) pb.Response {
 	fmt.Println("########## getUZOVI ##########")
 	bytes := []byte(polisafspraak.UzoviCode)
 	return shim.Success(bytes)
 }
 
-// Init values ...
+// InitValues ...
 //========================================================================================================
-func Polisafspraak_initValues(stub shim.ChaincodeStubInterface, polisafspraak dfzproto.Polisafspraak, args []string) pb.Response {
+func InitValues(stub shim.ChaincodeStubInterface, polisafspraak dfzproto.Polisafspraak, args []string) pb.Response {
 	fmt.Println("########## Init  values ##########")
 	bsncode := args[0]
 	jaar := args[1]
@@ -56,7 +56,7 @@ func Polisafspraak_initValues(stub shim.ChaincodeStubInterface, polisafspraak df
 		return shim.Error("BSN invalid")
 	}
 
-	err = polisafspraak_setBsnState(stub, polisafspraak, bsncode, jaar, polisafspraak.MaxAantalPerJaar, declaratie)
+	err = setBsnState(stub, polisafspraak, bsncode, jaar, polisafspraak.MaxAantalPerJaar, declaratie)
 	if err != nil {
 
 		return shim.Error("error saving via policycontactrepository")
@@ -65,9 +65,9 @@ func Polisafspraak_initValues(stub shim.ChaincodeStubInterface, polisafspraak df
 	return shim.Success(nil)
 }
 
-// Check if the claim is covered ...
+// ValidateClaim ...
 //========================================================================================================================
-func Polisafspraak_validateClaim(stub shim.ChaincodeStubInterface, polisafspraak dfzproto.Polisafspraak, args []string) pb.Response {
+func ValidateClaim(stub shim.ChaincodeStubInterface, polisafspraak dfzproto.Polisafspraak, args []string) pb.Response {
 	var declaratie dfzproto.Declaratie
 
 	fmt.Println("########## Validate Claim ##########")
@@ -78,19 +78,19 @@ func Polisafspraak_validateClaim(stub shim.ChaincodeStubInterface, polisafspraak
 	err := json.Unmarshal(bytes, &declaratie)
 	if err != nil {
 		fmt.Println(err.Error())
-		return polisafspraak_createResponse("FOUT", 0, 0, "", 0, err.Error(), "", nil)
+		return createResponse("FOUT", 0, 0, "", 0, err.Error(), "", nil)
 	}
 
 	// is deze declaratie al gedaan?
 	fmt.Println("Checking Treatment")
-	vorigeDeclaratie, err := polisafspraak_getTreatmentState(stub, polisafspraak, declaratie.Voorlooprecord.ReferentieBehandeling)
+	vorigeDeclaratie, err := getTreatmentState(stub, polisafspraak, declaratie.Voorlooprecord.ReferentieBehandeling)
 	if err != nil {
 		fmt.Println("Error checking treatment")
-		return polisafspraak_createResponse("FOUT", 0, 0, "", 0, err.Error(), "", nil)
+		return createResponse("FOUT", 0, 0, "", 0, err.Error(), "", nil)
 	}
 	if vorigeDeclaratie.Voorlooprecord.ReferentieBehandeling == declaratie.Voorlooprecord.ReferentieBehandeling {
 		fmt.Println("Behandeling al verwerkt")
-		return polisafspraak_createResponse("FOUT", 0, 0, "", 0, "Behandeling al verwerkt", "", nil)
+		return createResponse("FOUT", 0, 0, "", 0, "Behandeling al verwerkt", "", nil)
 
 	}
 
@@ -99,7 +99,7 @@ func Polisafspraak_validateClaim(stub shim.ChaincodeStubInterface, polisafspraak
 	patient, err := dfzutil.GetPersoon(stub, declaratie.Verzekerderecord.Bsncode)
 	if err != nil {
 		fmt.Println("Error checking BSN")
-		return polisafspraak_createResponse("FOUT", 0, 0, "", 0, err.Error(), "", nil)
+		return createResponse("FOUT", 0, 0, "", 0, err.Error(), "", nil)
 	}
 
 	// Is there stil funding for this patient?
@@ -119,10 +119,10 @@ func Polisafspraak_validateClaim(stub shim.ChaincodeStubInterface, polisafspraak
 
 	fmt.Printf("Iets = %s\n", iets)
 
-	currentStatus, err := polisafspraak_getBsnState(stub, polisafspraak, patient.Bsncode, jaar)
+	currentStatus, err := getBsnState(stub, polisafspraak, patient.Bsncode, jaar)
 	if err != nil {
 		fmt.Println("Error checking Credits")
-		return polisafspraak_createResponse("FOUT", 0, 0, "", 0, err.Error(), "", nil)
+		return createResponse("FOUT", 0, 0, "", 0, err.Error(), "", nil)
 	}
 
 	// Check AGB
@@ -130,7 +130,7 @@ func Polisafspraak_validateClaim(stub shim.ChaincodeStubInterface, polisafspraak
 	agbcode := declaratie.Voorlooprecord.AGBPraktijk
 	zorgaanbieder, err := dfzutil.GetZorgaanbieder(stub, agbcode)
 	if err != nil {
-		return polisafspraak_createResponse("FOUT", 0, 0, "", 0, "AGBPraktijk niet bekend", "", nil)
+		return createResponse("FOUT", 0, 0, "", 0, "AGBPraktijk niet bekend", "", nil)
 	}
 
 	// Check AGB
@@ -139,14 +139,14 @@ func Polisafspraak_validateClaim(stub shim.ChaincodeStubInterface, polisafspraak
 		agbcode := declaratie.Voorlooprecord.AGBZorgverlener
 		_, err = dfzutil.GetZorgverlener(stub, agbcode)
 		if err != nil {
-			return polisafspraak_createResponse("FOUT", 0, 0, "", 0, "AGB behandelaar niet bekend", "", nil)
+			return createResponse("FOUT", 0, 0, "", 0, "AGB behandelaar niet bekend", "", nil)
 		}
 		fmt.Println("Checking werkzaam")
 		agbcode = declaratie.Voorlooprecord.AGBPraktijk
 		agbcode2 := declaratie.Voorlooprecord.AGBZorgverlener
 		err = dfzutil.CheckWerkzaam(stub, agbcode, agbcode2)
 		if err != nil {
-			return polisafspraak_createResponse("FOUT", 0, 0, "", 0, "Behandelaar niet werkzaam in praktijk", "", nil)
+			return createResponse("FOUT", 0, 0, "", 0, "Behandelaar niet werkzaam in praktijk", "", nil)
 		}
 	}
 
@@ -182,7 +182,7 @@ func Polisafspraak_validateClaim(stub shim.ChaincodeStubInterface, polisafspraak
 		}
 
 		if !locatieOk {
-			return polisafspraak_createResponse("FOUT", 0, 0, "", 0, "Niet aanwezig op geschikte locatie", "", nil)
+			return createResponse("FOUT", 0, 0, "", 0, "Niet aanwezig op geschikte locatie", "", nil)
 		}
 	}
 
@@ -195,10 +195,10 @@ func Polisafspraak_validateClaim(stub shim.ChaincodeStubInterface, polisafspraak
 		prslijst := prestatieRecord.Prestatiecodelijst
 		prscode := prestatieRecord.Prestatiecode
 		datum := prestatieRecord.DatumPrestatie.String()[0:10]
-		contractPrestatie, err := polisafspraak_getContracted(stub, polisafspraak.UzoviCode, agbcode, prslijst, prscode, datum)
+		contractPrestatie, err := getContracted(stub, polisafspraak.UzoviCode, agbcode, prslijst, prscode, datum)
 		if err != nil {
 			fmt.Println("Geen contract afgesloten")
-			contractPrestatie = dfzproto.Contractprestatie{"", "", 0, "", 0, ""}
+			contractPrestatie = dfzproto.Contractprestatie{Prestatiecodelijst: "", Prestatiecode: "", TariefPrestatie: 0, Omschrijving: "", Percentage: 0, Herkomst: ""}
 		}
 
 		gedekt := contractPrestatie.TariefPrestatie
@@ -229,7 +229,7 @@ func Polisafspraak_validateClaim(stub shim.ChaincodeStubInterface, polisafspraak
 		totalClaimed = totalClaimed + prestatieRecord.TariefPrestatie
 		prestatieRecord.BerekendBedrag = gedekt
 		totaalGedekt = totaalGedekt + gedekt
-		prestatieResultaat := dfzproto.PrestatieResultaat{prestatieRecord, contractPrestatie.Omschrijving, bericht}
+		prestatieResultaat := dfzproto.PrestatieResultaat{PrestatieRecord: prestatieRecord, Omschrijving: contractPrestatie.Omschrijving, Bericht: bericht}
 		prestaties = append(prestaties, prestatieResultaat)
 	}
 
@@ -258,18 +258,12 @@ func Polisafspraak_validateClaim(stub shim.ChaincodeStubInterface, polisafspraak
 	}
 
 	msg = msg + polisafspraak.UzoviCode
-	return polisafspraak_createResponse("OK", tegoed, totaalGedekt, polisafspraak.Eenheid, noclaim, msg, declaratie.Voorlooprecord.AGBPraktijk, prestaties)
+	return createResponse("OK", tegoed, totaalGedekt, polisafspraak.Eenheid, noclaim, msg, declaratie.Voorlooprecord.AGBPraktijk, prestaties)
 }
 
-func polisafspraak_createResponse(result string, restant int64, vergoed int64, unity string, noclaim int64, bericht string, agbcode string, prestatierecords []dfzproto.PrestatieResultaat) pb.Response {
-	antwoord := dfzproto.Retourbericht{agbcode, result, restant, vergoed, unity, noclaim, bericht, prestatierecords}
-	bytes, _ := json.Marshal(antwoord)
-	return shim.Success(bytes)
-}
-
-// Execute the claim ...
+// DoClaim ...
 //========================================================================================================================
-func Polisafspraak_doClaim(stub shim.ChaincodeStubInterface, polisafspraak dfzproto.Polisafspraak, args []string) pb.Response {
+func DoClaim(stub shim.ChaincodeStubInterface, polisafspraak dfzproto.Polisafspraak, args []string) pb.Response {
 	fmt.Println("########## Do Claim ##########")
 	var declaratie dfzproto.Declaratie
 	var antwoord dfzproto.Retourbericht
@@ -279,42 +273,42 @@ func Polisafspraak_doClaim(stub shim.ChaincodeStubInterface, polisafspraak dfzpr
 	err := json.Unmarshal(bytes, &declaratie)
 	if err != nil {
 		fmt.Println(err.Error())
-		return polisafspraak_createResponse("FOUT", 0, 0, "", 0, err.Error(), "", nil)
+		return createResponse("FOUT", 0, 0, "", 0, err.Error(), "", nil)
 	}
 
-	response := Polisafspraak_validateClaim(stub, polisafspraak, args)
+	response := ValidateClaim(stub, polisafspraak, args)
 	json.Unmarshal(response.Payload, &antwoord)
 	if antwoord.Retourcode == "FOUT" {
 		return shim.Error(antwoord.Bericht)
 	}
 	jaar := strconv.Itoa(declaratie.Prestatierecords[0].DatumPrestatie.Year())
 
-	err = polisafspraak_setBsnState(stub, polisafspraak, declaratie.Verzekerderecord.Bsncode, jaar, antwoord.Restant, declaratie)
+	err = setBsnState(stub, polisafspraak, declaratie.Verzekerderecord.Bsncode, jaar, antwoord.Restant, declaratie)
 	if err != nil {
 		return shim.Error(err.Error())
 	}
 
-	err = polisafspraak_setAgbBalanceState(stub, polisafspraak, declaratie.Voorlooprecord.AGBPraktijk, jaar, antwoord.Vergoed)
+	err = setAgbBalanceState(stub, polisafspraak, declaratie.Voorlooprecord.AGBPraktijk, jaar, antwoord.Vergoed)
 	if err != nil {
 		return shim.Error(err.Error())
 	}
 
-	err = polisafspraak_setBsnBalanceState(stub, polisafspraak, declaratie.Voorlooprecord.AGBPraktijk, jaar, antwoord.Vergoed)
+	err = setBsnBalanceState(stub, polisafspraak, declaratie.Voorlooprecord.AGBPraktijk, jaar, antwoord.Vergoed)
 	if err != nil {
 		return shim.Error(err.Error())
 	}
 
-	err = polisafspraak_setContractBalanceState(stub, polisafspraak, jaar, antwoord.Vergoed)
+	err = setContractBalanceState(stub, polisafspraak, jaar, antwoord.Vergoed)
 	if err != nil {
 		return shim.Error(err.Error())
 	}
 
-	err = polisafspraak_setCompanyBalanceState(stub, polisafspraak, jaar, antwoord.Vergoed)
+	err = setCompanyBalanceState(stub, polisafspraak, jaar, antwoord.Vergoed)
 	if err != nil {
 		return shim.Error(err.Error())
 	}
 
-	err = polisafspraak_setTreatmentState(stub, polisafspraak, declaratie)
+	err = setTreatmentState(stub, polisafspraak, declaratie)
 	if err != nil {
 		return shim.Error(err.Error())
 	}
@@ -349,9 +343,15 @@ func Polisafspraak_doClaim(stub shim.ChaincodeStubInterface, polisafspraak dfzpr
 	return shim.Success(response.Payload)
 }
 
+func createResponse(result string, restant int64, vergoed int64, unity string, noclaim int64, bericht string, agbcode string, prestatierecords []dfzproto.PrestatieResultaat) pb.Response {
+	antwoord := dfzproto.Retourbericht{AgbCode: agbcode, Retourcode: result, Restant: restant, Vergoed: vergoed, RestantEenheid: unity, Bijbetalen: noclaim, Bericht: bericht, Prestatierecords: prestatierecords}
+	bytes, _ := json.Marshal(antwoord)
+	return shim.Success(bytes)
+}
+
 // Set State BSN ...
 //========================================================================================================
-func polisafspraak_setBsnState(stub shim.ChaincodeStubInterface, polisafspraak dfzproto.Polisafspraak, bsncode string, jaar string, treatments int64, declaratie dfzproto.Declaratie) error {
+func setBsnState(stub shim.ChaincodeStubInterface, polisafspraak dfzproto.Polisafspraak, bsncode string, jaar string, treatments int64, declaratie dfzproto.Declaratie) error {
 
 	key := polisafspraak.ContractCode + ":" + bsncode + ":" + jaar
 
@@ -378,7 +378,7 @@ func polisafspraak_setBsnState(stub shim.ChaincodeStubInterface, polisafspraak d
 
 // Get State of BSN...
 //========================================================================================================================
-func polisafspraak_getBsnState(stub shim.ChaincodeStubInterface, polisafspraak dfzproto.Polisafspraak, bsncode string, jaar string) (dfzproto.ContractStatus, error) {
+func getBsnState(stub shim.ChaincodeStubInterface, polisafspraak dfzproto.Polisafspraak, bsncode string, jaar string) (dfzproto.ContractStatus, error) {
 
 	var currentStatus dfzproto.ContractStatus
 	key := polisafspraak.ContractCode + ":" + bsncode + ":" + jaar
@@ -397,10 +397,10 @@ func polisafspraak_getBsnState(stub shim.ChaincodeStubInterface, polisafspraak d
 
 // Set State AGB ...
 //========================================================================================================
-func polisafspraak_setAgbBalanceState(stub shim.ChaincodeStubInterface, polisafspraak dfzproto.Polisafspraak, agbcode string, jaar string, amount int64) error {
+func setAgbBalanceState(stub shim.ChaincodeStubInterface, polisafspraak dfzproto.Polisafspraak, agbcode string, jaar string, amount int64) error {
 
 	key := "AGBBAL-" + agbcode + ":" + jaar
-	oldAmount, err := Polisafspraak_getBalanceState(stub, polisafspraak.VerzekeraarRepository, key)
+	oldAmount, err := getBalanceState(stub, polisafspraak.VerzekeraarRepository, key)
 	if err != nil {
 		return errors.New("error retrieving AGB state")
 	}
@@ -421,10 +421,10 @@ func polisafspraak_setAgbBalanceState(stub shim.ChaincodeStubInterface, polisafs
 
 // Get State of Treatment...
 //========================================================================================================================
-func polisafspraak_getTreatmentState(stub shim.ChaincodeStubInterface, polisafspraak dfzproto.Polisafspraak, treatmentId string) (dfzproto.Declaratie, error) {
+func getTreatmentState(stub shim.ChaincodeStubInterface, polisafspraak dfzproto.Polisafspraak, treatmentID string) (dfzproto.Declaratie, error) {
 
 	var declaratie dfzproto.Declaratie
-	key := "TREATMENT-" + treatmentId
+	key := "TREATMENT-" + treatmentID
 
 	invokeArgs := util.ToChaincodeArgs("query", key)
 	response := stub.InvokeChaincode(polisafspraak.VerzekeraarRepository, invokeArgs, "")
@@ -440,7 +440,7 @@ func polisafspraak_getTreatmentState(stub shim.ChaincodeStubInterface, polisafsp
 
 // Set State Treatment ...
 //========================================================================================================
-func polisafspraak_setTreatmentState(stub shim.ChaincodeStubInterface, polisafspraak dfzproto.Polisafspraak, declaratie dfzproto.Declaratie) error {
+func setTreatmentState(stub shim.ChaincodeStubInterface, polisafspraak dfzproto.Polisafspraak, declaratie dfzproto.Declaratie) error {
 
 	key := "TREATMENT-" + declaratie.Voorlooprecord.ReferentieBehandeling
 
@@ -463,11 +463,11 @@ func polisafspraak_setTreatmentState(stub shim.ChaincodeStubInterface, polisafsp
 
 // Set State AGB ...
 //========================================================================================================
-func polisafspraak_setContractBalanceState(stub shim.ChaincodeStubInterface, polisafspraak dfzproto.Polisafspraak, jaar string, amount int64) error {
+func setContractBalanceState(stub shim.ChaincodeStubInterface, polisafspraak dfzproto.Polisafspraak, jaar string, amount int64) error {
 	fmt.Println("########## Set State ##########")
 
 	key := polisafspraak.ContractCode + ":CTCBAL:" + jaar
-	oldAmount, err := Polisafspraak_getBalanceState(stub, polisafspraak.VerzekeraarRepository, key)
+	oldAmount, err := getBalanceState(stub, polisafspraak.VerzekeraarRepository, key)
 	if err != nil {
 		return errors.New("error retrieving AGB state")
 	}
@@ -488,12 +488,12 @@ func polisafspraak_setContractBalanceState(stub shim.ChaincodeStubInterface, pol
 
 // Set Company Balance state ...
 //========================================================================================================
-func polisafspraak_setCompanyBalanceState(stub shim.ChaincodeStubInterface, polisafspraak dfzproto.Polisafspraak, jaar string, amount int64) error {
+func setCompanyBalanceState(stub shim.ChaincodeStubInterface, polisafspraak dfzproto.Polisafspraak, jaar string, amount int64) error {
 
 	fmt.Printf("Company %s balance set add amount:%d\n", polisafspraak.UzoviCode, amount)
 
 	key := "UZOVIBAL-" + polisafspraak.UzoviCode + ":" + jaar
-	oldAmount, err := Polisafspraak_getBalanceState(stub, polisafspraak.VerzekeraarRepository, key)
+	oldAmount, err := getBalanceState(stub, polisafspraak.VerzekeraarRepository, key)
 	if err != nil {
 		return errors.New("error retrieving AGB state")
 	}
@@ -516,10 +516,10 @@ func polisafspraak_setCompanyBalanceState(stub shim.ChaincodeStubInterface, poli
 
 // Set BSN balance state...
 //========================================================================================================
-func polisafspraak_setBsnBalanceState(stub shim.ChaincodeStubInterface, polisafspraak dfzproto.Polisafspraak, bsncode string, jaar string, amount int64) error {
+func setBsnBalanceState(stub shim.ChaincodeStubInterface, polisafspraak dfzproto.Polisafspraak, bsncode string, jaar string, amount int64) error {
 
 	key := "BSNBAL-" + bsncode + ":" + jaar
-	oldAmount, err := Polisafspraak_getBalanceState(stub, polisafspraak.VerzekeraarRepository, key)
+	oldAmount, err := getBalanceState(stub, polisafspraak.VerzekeraarRepository, key)
 	if err != nil {
 		return errors.New("error retrieving BSN state")
 	}
@@ -540,7 +540,7 @@ func polisafspraak_setBsnBalanceState(stub shim.ChaincodeStubInterface, polisafs
 
 // Get State of AGB...
 //========================================================================================================================
-func Polisafspraak_getBalanceState(stub shim.ChaincodeStubInterface, polisafspraakRepository string, key string) (int64, error) {
+func getBalanceState(stub shim.ChaincodeStubInterface, polisafspraakRepository string, key string) (int64, error) {
 
 	invokeArgs := util.ToChaincodeArgs("query", key)
 	response := stub.InvokeChaincode(polisafspraakRepository, invokeArgs, "")
@@ -554,7 +554,7 @@ func Polisafspraak_getBalanceState(stub shim.ChaincodeStubInterface, polisafspra
 
 // Check Coverage...
 //========================================================================================================================
-func polisafspraak_getContracted(stub shim.ChaincodeStubInterface, uzovicode string, agbcode string, prestatielijst string, prestatiecode string, date string) (dfzproto.Contractprestatie, error) {
+func getContracted(stub shim.ChaincodeStubInterface, uzovicode string, agbcode string, prestatielijst string, prestatiecode string, date string) (dfzproto.Contractprestatie, error) {
 	var contractprestatie dfzproto.Contractprestatie
 
 	invokeArgs := util.ToChaincodeArgs("queryContractedTreatment", uzovicode, agbcode, date, prestatielijst, prestatiecode)
