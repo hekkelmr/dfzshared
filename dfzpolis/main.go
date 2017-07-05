@@ -334,7 +334,7 @@ func DoClaim(stub shim.ChaincodeStubInterface, polisafspraak dfzproto.Polisafspr
 		return shim.Error(msg)
 	}
 
-	err = dfzutil.DoeGecombneerdeBetaling(stub, verzekeraar.WalletID, zorgaanbieder.WalletID, antwoord.Vergoed, patient.WalletID, antwoord.Bijbetalen, "Uitbetaling declaratie "+stub.GetTxID())
+	err = dfzutil.DoeGecombineerdeBetaling(stub, verzekeraar.WalletID, zorgaanbieder.WalletID, antwoord.Vergoed, patient.WalletID, antwoord.Bijbetalen, "Uitbetaling declaratie "+stub.GetTxID())
 
 	if err != nil {
 		return shim.Error(err.Error())
