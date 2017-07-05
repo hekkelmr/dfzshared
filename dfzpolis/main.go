@@ -343,6 +343,20 @@ func DoClaim(stub shim.ChaincodeStubInterface, polisafspraak dfzproto.Polisafspr
 	return shim.Success(response.Payload)
 }
 
+// GetBalanceState ...
+//========================================================================================================================
+func GetBalanceState(stub shim.ChaincodeStubInterface, polisafspraakRepository string, key string) (int64, error) {
+
+	invokeArgs := util.ToChaincodeArgs("query", key)
+	response := stub.InvokeChaincode(polisafspraakRepository, invokeArgs, "")
+	if response.Status != shim.OK {
+		return 0, errors.New("error querying policycontactrepository")
+	}
+	amount, _ := strconv.ParseInt(string(response.Payload), 10, 64)
+
+	return amount, nil
+}
+
 func createResponse(result string, restant int64, vergoed int64, unity string, noclaim int64, bericht string, agbcode string, prestatierecords []dfzproto.PrestatieResultaat) pb.Response {
 	antwoord := dfzproto.Retourbericht{AgbCode: agbcode, Retourcode: result, Restant: restant, Vergoed: vergoed, RestantEenheid: unity, Bijbetalen: noclaim, Bericht: bericht, Prestatierecords: prestatierecords}
 	bytes, _ := json.Marshal(antwoord)
@@ -400,7 +414,7 @@ func getBsnState(stub shim.ChaincodeStubInterface, polisafspraak dfzproto.Polisa
 func setAgbBalanceState(stub shim.ChaincodeStubInterface, polisafspraak dfzproto.Polisafspraak, agbcode string, jaar string, amount int64) error {
 
 	key := "AGBBAL-" + agbcode + ":" + jaar
-	oldAmount, err := getBalanceState(stub, polisafspraak.VerzekeraarRepository, key)
+	oldAmount, err := GetBalanceState(stub, polisafspraak.VerzekeraarRepository, key)
 	if err != nil {
 		return errors.New("error retrieving AGB state")
 	}
@@ -467,7 +481,7 @@ func setContractBalanceState(stub shim.ChaincodeStubInterface, polisafspraak dfz
 	fmt.Println("########## Set State ##########")
 
 	key := polisafspraak.ContractCode + ":CTCBAL:" + jaar
-	oldAmount, err := getBalanceState(stub, polisafspraak.VerzekeraarRepository, key)
+	oldAmount, err := GetBalanceState(stub, polisafspraak.VerzekeraarRepository, key)
 	if err != nil {
 		return errors.New("error retrieving AGB state")
 	}
@@ -493,7 +507,7 @@ func setCompanyBalanceState(stub shim.ChaincodeStubInterface, polisafspraak dfzp
 	fmt.Printf("Company %s balance set add amount:%d\n", polisafspraak.UzoviCode, amount)
 
 	key := "UZOVIBAL-" + polisafspraak.UzoviCode + ":" + jaar
-	oldAmount, err := getBalanceState(stub, polisafspraak.VerzekeraarRepository, key)
+	oldAmount, err := GetBalanceState(stub, polisafspraak.VerzekeraarRepository, key)
 	if err != nil {
 		return errors.New("error retrieving AGB state")
 	}
@@ -519,7 +533,7 @@ func setCompanyBalanceState(stub shim.ChaincodeStubInterface, polisafspraak dfzp
 func setBsnBalanceState(stub shim.ChaincodeStubInterface, polisafspraak dfzproto.Polisafspraak, bsncode string, jaar string, amount int64) error {
 
 	key := "BSNBAL-" + bsncode + ":" + jaar
-	oldAmount, err := getBalanceState(stub, polisafspraak.VerzekeraarRepository, key)
+	oldAmount, err := GetBalanceState(stub, polisafspraak.VerzekeraarRepository, key)
 	if err != nil {
 		return errors.New("error retrieving BSN state")
 	}
@@ -536,20 +550,6 @@ func setBsnBalanceState(stub shim.ChaincodeStubInterface, polisafspraak dfzproto
 	}
 
 	return nil
-}
-
-// Get State of AGB...
-//========================================================================================================================
-func getBalanceState(stub shim.ChaincodeStubInterface, polisafspraakRepository string, key string) (int64, error) {
-
-	invokeArgs := util.ToChaincodeArgs("query", key)
-	response := stub.InvokeChaincode(polisafspraakRepository, invokeArgs, "")
-	if response.Status != shim.OK {
-		return 0, errors.New("error querying policycontactrepository")
-	}
-	amount, _ := strconv.ParseInt(string(response.Payload), 10, 64)
-
-	return amount, nil
 }
 
 // Check Coverage...
