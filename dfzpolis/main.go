@@ -81,6 +81,12 @@ func ValidateClaim(stub shim.ChaincodeStubInterface, polisafspraak dfzproto.Poli
 		return createResponse("FOUT", 0, 0, "", 0, err.Error(), "", nil)
 	}
 
+	// Ophalen verzekeraar
+	verzekeraar, err := dfzutil.GetVerzekeraar(stub, polisafspraak.UzoviCode)
+	if err != nil {
+		return createResponse("FOUT", 0, 0, "", 0, "Kan de zorgverzekeraar niet bepalen", "", nil)
+	}
+
 	// is deze declaratie al gedaan?
 	fmt.Println("Checking Treatment")
 	vorigeDeclaratie, err := getTreatmentState(stub, polisafspraak, declaratie.Voorlooprecord.ReferentieBehandeling)
@@ -91,7 +97,6 @@ func ValidateClaim(stub shim.ChaincodeStubInterface, polisafspraak dfzproto.Poli
 	if vorigeDeclaratie.Voorlooprecord.ReferentieBehandeling == declaratie.Voorlooprecord.ReferentieBehandeling {
 		fmt.Println("Behandeling al verwerkt")
 		return createResponse("FOUT", 0, 0, "", 0, "Behandeling al verwerkt", "", nil)
-
 	}
 
 	// Does the person exists? (can this message be tamperd with???)
@@ -105,19 +110,6 @@ func ValidateClaim(stub shim.ChaincodeStubInterface, polisafspraak dfzproto.Poli
 	// Is there stil funding for this patient?
 	fmt.Println("Checking Credits")
 	jaar := strconv.Itoa(declaratie.Prestatierecords[0].DatumPrestatie.Year())
-
-	iets, err := stub.GetHistoryForKey(declaratie.Verzekerderecord.Bsncode + ":" + jaar)
-	if err == nil {
-		for iets.HasNext() {
-			result, err := iets.Next()
-			if err != nil {
-				fmt.Println("foutje bij iets")
-			}
-			fmt.Println(result)
-		}
-	}
-
-	fmt.Printf("Iets = %s\n", iets)
 
 	currentStatus, err := getBsnState(stub, polisafspraak, patient.Bsncode, jaar)
 	if err != nil {
@@ -189,6 +181,7 @@ func ValidateClaim(stub shim.ChaincodeStubInterface, polisafspraak dfzproto.Poli
 	var totaalGedekt int64
 	var totalClaimed int64
 	var prestaties []dfzproto.PrestatieResultaat
+
 	// Check supplier agreements ...
 	for _, prestatieRecord := range declaratie.Prestatierecords {
 		bericht := ""
@@ -257,7 +250,7 @@ func ValidateClaim(stub shim.ChaincodeStubInterface, polisafspraak dfzproto.Poli
 		}
 	}
 
-	msg = msg + polisafspraak.UzoviCode
+	msg = msg + "M.v.g.: " + verzekeraar.Naam
 	return createResponse("OK", tegoed, totaalGedekt, polisafspraak.Eenheid, noclaim, msg, declaratie.Voorlooprecord.AGBPraktijk, prestaties)
 }
 
