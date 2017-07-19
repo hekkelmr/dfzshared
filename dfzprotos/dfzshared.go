@@ -6,6 +6,8 @@ package dfzprotos
 
 import (
 	"time"
+
+	"github.com/golang/protobuf/ptypes/timestamp"
 )
 
 // EIVoorloopRecord ... The header record of a healthclaim
@@ -126,10 +128,10 @@ type Verzekeraar struct {
 }
 
 type Behandelvoorstel struct {
-	BehandelingID string      `json:"BehandelingID"`
-	VorigeID      string      `json:"VorigeID"`
-	Uitgevoerd    time.Time   `json:"Uitgevoerd"`
-	Behandeling   Behandeling `json:"Behandeling"`
+	BehandelingID string              `json:"BehandelingID"`
+	VorigeID      string              `json:"VorigeID"`
+	Uitgevoerd    timestamp.Timestamp `json:"Uitgevoerd"`
+	Behandeling   Behandeling         `json:"Behandeling"`
 }
 
 type Behandeling struct {
