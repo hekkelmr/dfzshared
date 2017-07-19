@@ -10,10 +10,9 @@ import (
 
 // EIVoorloopRecord ... The header record of a healthclaim
 type EIVoorloopRecord struct {
-	AGBServicebureau        string `json:"AGBServicebureau"`
+	AGBRegiebehandelaar     string `json:"AGBRegiebehandelaar"`
 	AGBZorgverlener         string `json:"AGBZorgverlener"`
 	AGBPraktijk             string `json:"AGBPraktijk"`
-	AGBInstelling           string `json:"AGBInstelling"`
 	IdentificatieBetalenAan string `json:"IdentificatieBetalenAan"`
 	ReferentieBehandeling   string `json:"ReferentieBehandeling"`
 }
@@ -127,13 +126,13 @@ type Verzekeraar struct {
 
 type Behandelvoorstel struct {
 	BehandelingID string      `json:"BehandelingID"`
+	Bsncode       string      `json:"Bsncode"`
 	VorigeID      string      `json:"VorigeID"`
 	Uitgevoerd    time.Time   `json:"Uitgevoerd"`
 	Behandeling   Behandeling `json:"Behandeling"`
 }
 
 type Behandeling struct {
-	Patient     Persoon       `json:"Patient"`
 	Indiener    Zorgaanbieder `json:"Indiener"`
 	Diagnose    string        `json:"Diagnose"`
 	Behandeling string        `json:"Behandeling"`
