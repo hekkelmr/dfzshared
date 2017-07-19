@@ -99,7 +99,7 @@ func ValidateClaim(stub shim.ChaincodeStubInterface, polisafspraak dfzproto.Poli
 		return createResponse("FOUT", 0, 0, "", 0, "Behandeling al verwerkt", "", nil)
 	}
 
-	// Does the person exists? (can this message be tamperd with???)
+	// Does the person exists? (can this message be tampered with???)
 	fmt.Println("Checking BSN")
 	patient, err := dfzutil.GetPersoon(stub, declaratie.Verzekerderecord.Bsncode)
 	if err != nil {
@@ -158,7 +158,7 @@ func ValidateClaim(stub shim.ChaincodeStubInterface, polisafspraak dfzproto.Poli
 				for _, geoLocatie := range zorgaanbieder.GeoLocaties {
 					latVest, err := strconv.ParseFloat(geoLocatie.Lat, 64)
 					if err != nil {
-						fmt.Println("Fout bij omzetten llatVest")
+						fmt.Println("Fout bij omzetten latVest")
 					}
 					lonVest, err := strconv.ParseFloat(geoLocatie.Lon, 64)
 					if err != nil {

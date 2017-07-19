@@ -125,16 +125,20 @@ type Verzekeraar struct {
 	ID        string `json:"ID"`
 }
 
+type Behandelvoorstel struct {
+	BehandelingID string      `json:"BehandelingID"`
+	VorigeID      string      `json:"VorigeID"`
+	Uitgevoerd    string      `json:"Uitgevoerd"`
+	Behandeling   Behandeling `json:"Behandeling"`
+}
+
 type Behandeling struct {
-	BehandelingID string        `json:"BehandelingID"`
-	Patient       Persoon       `json:"Patient"`
-	Indiener      Zorgaanbieder `json:"Indiener"`
-	Diagnose      string        `json:"Diagnose"`
-	Behandeling   string        `json:"Behandeling"`
-	Claim         Declaratie    `json:"Claim"`
-	VorigeID      string        `json:"VorigeID"`
-	Referentie    string        `json:"Referentie"`
-	Uitgevoerd    string        `json:"Uitgevoerd"`
+	Patient     Persoon       `json:"Patient"`
+	Indiener    Zorgaanbieder `json:"Indiener"`
+	Diagnose    string        `json:"Diagnose"`
+	Behandeling string        `json:"Behandeling"`
+	Claim       Declaratie    `json:"Claim"`
+	Referentie  string        `json:"Referentie"`
 }
 
 // type AssignedPolicies struct {
@@ -168,12 +172,6 @@ type CurecoinWallet struct {
 	ID                string           `json:"ID"`
 	Saldo             int64            `json:"Saldo"`
 	LaatsteTransactie WalletTransactie `json:"LaatsteTransactie"`
-}
-
-type BehandelingToegang struct {
-	Verlener       string    `json:"Verlener"`
-	Geautoriseerde string    `json:"Geautoriseerde"`
-	Vervalt        time.Time `json:"Vervalt"`
 }
 
 type Agb struct {
