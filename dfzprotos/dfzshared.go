@@ -128,7 +128,7 @@ type Verzekeraar struct {
 type Behandelvoorstel struct {
 	BehandelingID string      `json:"BehandelingID"`
 	VorigeID      string      `json:"VorigeID"`
-	Uitgevoerd    string      `json:"Uitgevoerd"`
+	Uitgevoerd    time.Time   `json:"Uitgevoerd"`
 	Behandeling   Behandeling `json:"Behandeling"`
 }
 
